@@ -97,7 +97,6 @@
 				$sql_select = "SELECT log.* FROM $table_cbxwpemaillogger AS log";
 
 				$log = $wpdb->get_row( "$sql_select WHERE $where_sql ", 'ARRAY_A' );
-
 			}
 
 			return $log;

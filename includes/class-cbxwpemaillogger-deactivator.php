@@ -33,4 +33,4 @@
 
 		}
 
-	}
+	}//end class CBXWPEmailLogger_Deactivator

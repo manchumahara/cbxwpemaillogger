@@ -2,3 +2,25 @@
  * All of the CSS for your admin-specific functionality should be
  * included in this file.
  */
+
+
+
+.cbxwpemaillogger_body {
+	overflow: hidden;
+	padding-top: 56.25%;
+	position: relative;
+}
+
+.cbxwpemaillogger_body iframe {
+	border: 0;
+	height: 100%;
+	left: 0;
+	position: absolute;
+	top: 0;
+	width: 100%;
+}
+
+/* 4x3 Aspect Ratio */
+.cbxwpemaillogger_body-4x3 {
+	padding-top: 75%;
+}

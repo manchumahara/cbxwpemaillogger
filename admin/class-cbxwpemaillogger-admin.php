@@ -75,7 +75,25 @@
 		 * Admin listing menu callback
 		 */
 		public function display_cbxwpemaillogger_listing_page() {
-			include( cbxwpemaillogger_locate_template('admin/cbxwpemaillogger-logs.php') );
+			$view = isset($_REQUEST['view'])? esc_attr($_REQUEST['view']) : 'list';
+
+
+			if($view == 'list'){
+				include( cbxwpemaillogger_locate_template('admin/cbxwpemaillogger-logs.php') );
+			}
+			/*else if($view == 'body'){
+				$log_id = isset($_REQUEST['log_id'])? intval($_REQUEST['log_id']) : 0;
+				$item = CBXWPEmailLoggerHelper::SingleLog($log_id);
+				include( cbxwpemaillogger_locate_template('admin/cbxwpemaillogger-body.php') );
+			}*/
+			else{
+				$log_id = isset($_REQUEST['log_id'])? intval($_REQUEST['log_id']) : 0;
+
+				$item = CBXWPEmailLoggerHelper::SingleLog($log_id);
+
+				include( cbxwpemaillogger_locate_template('admin/cbxwpemaillogger-log.php') );
+			}
+
 		}//end method display_cbxwpemaillogger_listing_page
 
 		/**
@@ -150,6 +168,7 @@
 
 				wp_localize_script( 'cbxwpemaillogger', 'cbxwpemaillogger_dashboard', apply_filters( 'cbxwpemaillogger_js_vars', $cbxwpemaillogger_js_vars ) );
 
+				add_thickbox();
 
 				wp_enqueue_script( 'jquery' );
 				wp_enqueue_script( 'ply' );
@@ -177,6 +196,8 @@
 
 			$subject       = isset( $atts['subject'] ) ? $atts['subject'] : '';
 			$body          = isset( $atts['message'] ) ? $atts['message'] : ( isset( $atts['html'] ) ? $atts['html'] : '' );
+			//$htm
+
 			$headers       = isset( $atts['headers'] ) ? $atts['headers'] : array();
 			$attachments   = isset( $atts['attachments'] ) ? $atts['attachments'] : array();
 
@@ -468,7 +489,7 @@
 			check_ajax_referer( 'cbxwpemaillogger',
 				'security' );
 
-			if ( is_user_logged_in() ) {
+			if ( is_user_logged_in() && user_can( get_current_user_id(),'manage_options') ) {
 				$id = isset( $_POST['id'] ) ? intval( $_POST['id'] ) : 0;
 
 				if ( $id > 0 ) {
@@ -506,4 +527,71 @@
 			wp_send_json( $return );
 
 		}//end method email_log_delete
+
+		/**
+		 * Email log delete ajax handle
+		 */
+		public function email_resend(){
+			check_ajax_referer( 'cbxwpemaillogger',
+				'security' );
+
+			if ( is_user_logged_in() && user_can( get_current_user_id(),'manage_options') ) {
+				$id = isset( $_POST['id'] ) ? intval( $_POST['id'] ) : 0;
+
+				if ( $id > 0 ) {
+					global $wpdb;
+
+
+					$item = CBXWPEmailLoggerHelper::SingleLog($id);
+
+					$email_data  = maybe_unserialize( $item['email_data'] );
+
+					$atts = isset($email_data['atts'])? $email_data['atts']: array();
+
+
+
+					if(is_array($atts) && sizeof($atts) > 0){
+
+						//write_log($atts);
+
+						list($to, $subject, $message, $headers , $attachments) = array_values($atts);
+
+						$report = wp_mail($to, $subject, $message, $headers , $attachments);
+
+						if($report){
+							$return = array(
+								'message' => esc_html__( 'Email ReSend and Successfully sent.',
+									'cbxwpemaillogger' ),
+								'success' => 1,
+
+							);
+						}
+						else{
+							$return = array(
+								'message' => esc_html__( 'Email ReSend but failed.',
+									'cbxwpemaillogger' ),
+								'success' => 1,
+
+							);
+						}
+
+
+
+						wp_send_json( $return );
+					}
+
+				}
+			}
+
+			$return = array(
+				'message' => esc_html__( 'Failed to send or not enough access to send',
+					'cbxwpemaillogger' ),
+				'success' => 0,
+
+			);
+
+			wp_send_json( $return );
+
+		}//end method email_resend
+
 	}//end class CBXWPEmailLogger_Admin

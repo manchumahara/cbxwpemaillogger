@@ -173,6 +173,7 @@
 			$this->loader->add_filter( 'wp_mail', $plugin_admin, 'insert_log' );
 			$this->loader->add_action( 'wp_mail_failed', $plugin_admin, 'email_sent_failed' );
 			$this->loader->add_action( 'wp_ajax_cbxwpemaillogger_log_delete', $plugin_admin, 'email_log_delete'  ); //email_log_delete
+			$this->loader->add_action( 'wp_ajax_cbxwpemaillogger_log_resend', $plugin_admin, 'email_resend'  ); //resend email
 
 		}//end method define_admin_hooks
 
@@ -185,7 +186,10 @@
 		 */
 		private function define_public_hooks() {
 
-			//$plugin_public = new CBXWPEmailLogger_Public( $this->get_plugin_name(), $this->get_version() );
+			$plugin_public = new CBXWPEmailLogger_Public( $this->get_plugin_name(), $this->get_version() );
+
+			$this->loader->add_action( 'template_redirect', $plugin_public, 'email_log_body' );
+
 		}//end method define_public_hooks
 
 		/**

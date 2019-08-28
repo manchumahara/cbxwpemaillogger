@@ -54,4 +54,27 @@
 			$this->version     = $version;
 		}
 
+		public function email_log_body(){
+			if (isset($_REQUEST['action'])  && esc_attr($_REQUEST['action']) == 'cbxwpemaillogger_log_body' && is_user_logged_in() && user_can( get_current_user_id(),'manage_options') ) {
+
+				$nonce = $_REQUEST['_wpnonce'];
+				if ( ! wp_verify_nonce( $nonce, 'cbxwpemaillogger' ) ) {
+					// This nonce is not valid.
+					die( 'Security check' );
+				} else {
+					$id = isset( $_REQUEST['id'] ) ? intval( $_REQUEST['id'] ) : 0;
+
+					$item = CBXWPEmailLoggerHelper::SingleLog($id);
+
+					$email_data  = maybe_unserialize( $item['email_data'] );
+					$body = isset($email_data['body'])? $email_data['body'] : '';
+
+					echo $body;
+
+				}
+
+				die();
+			}
+		}//end method email_log_body
+
 	}//end class CBXWPEmailLogger_Public

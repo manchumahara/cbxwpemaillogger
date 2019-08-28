@@ -5,10 +5,10 @@
 	 * This file is used to markup the admin-facing rating log listing
 	 *
 	 * @link       https://codeboxr.com
-	 * @since      1.0.7
+	 * @since      1.0.0
 	 *
-	 * @package    cbxscratingreview
-	 * @subpackage cbxscratingreview/templates
+	 * @package    cbxwpemaillogger
+	 * @subpackage cbxwpemaillogger/templates
 	 */
 
 	if ( ! defined( 'WPINC' ) ) {

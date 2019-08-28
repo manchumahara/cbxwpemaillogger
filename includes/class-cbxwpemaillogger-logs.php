@@ -61,15 +61,31 @@
 
 			$actions = array();
 
-			//$actions['view'] = '<a class="cbxwpemaillogger_actions cbxwpemaillogger_actions_view" href="#">'.esc_html__('View', 'cbxwpemaillogger').'</a>';
-			$actions['delete'] = '<a data-busy="0" data-id="'.intval($item['id']).'" class="cbxwpemaillogger_actions cbxwpemaillogger_actions_delete" href="#">'.esc_html__('Delete', 'cbxwpemaillogger').'</a>';
+			$view_url = add_query_arg( array(
+				'view'   => 'email',
+				'log_id' => intval( $item['id'] )
+			) );
+
+			$body_url = add_query_arg( array(
+				'action'   => 'cbxwpemaillogger_log_body',
+				'id' => intval( $item['id'] ),
+				'_wpnonce' => wp_create_nonce( 'cbxwpemaillogger' )
+			) , site_url());
+
+			$actions['view']   = '<a class="cbxwpemaillogger_actions cbxwpemaillogger_actions_view" href="' . esc_url( $view_url ) . '">' . esc_html__( 'View', 'cbxwpemaillogger' ) . '</a>';
+
+			$actions['delete'] = '<a data-busy="0" data-id="' . intval( $item['id'] ) . '" class="cbxwpemaillogger_actions cbxwpemaillogger_actions_delete" href="#">' . esc_html__( 'Delete', 'cbxwpemaillogger' ) . '</a>';
+
+			$actions['template'] = '<a  class="thickbox cbxwpemaillogger_actions cbxwpemaillogger_actions_template" href="'.esc_url($body_url).'">' . esc_html__( 'Template', 'cbxwpemaillogger' ) . '</a>';
+
+			$actions['resend'] = '<a data-busy="0" data-id="' . intval( $item['id'] ) . '" class="cbxwpemaillogger_actions cbxwpemaillogger_actions_resend" href="#">' . esc_html__( 'ReSend', 'cbxwpemaillogger' ) . '</a>';
 
 			$date_created = '';
 			if ( $item['date_created'] != '' ) {
 				$date_created = CBXWPEmailLoggerHelper::DateReadableFormat( stripslashes( $item['date_created'] ), 'M j, Y g:i a' );
 			}
 
-			return $date_created.$this->row_actions( $actions );
+			return $date_created . $this->row_actions( $actions );
 		}//end method column_date_created
 
 
@@ -81,11 +97,11 @@
 		 * @return string
 		 */
 		function column_email_from( $item ) {
-			$email_data = maybe_unserialize($item['email_data']);
-			$headers_arr = isset($email_data['headers_arr'])? $email_data['headers_arr'] : array();
-			$email_from = isset($headers_arr['email_from'])? $headers_arr['email_from'] : array();
+			$email_data  = maybe_unserialize( $item['email_data'] );
+			$headers_arr = isset( $email_data['headers_arr'] ) ? $email_data['headers_arr'] : array();
+			$email_from  = isset( $headers_arr['email_from'] ) ? $headers_arr['email_from'] : array();
 
-			return $email_from['from_name'].'('.$email_from['from_email'].')';
+			return $email_from['from_name'] . '(' . $email_from['from_email'] . ')';
 		}//end column_to
 
 		/**
@@ -96,22 +112,21 @@
 		 * @return string
 		 */
 		function column_email_to( $item ) {
-			$email_data = maybe_unserialize($item['email_data']);
-			$headers_arr = isset($email_data['headers_arr'])? $email_data['headers_arr'] : array();
-			$emails = isset($headers_arr['email_to'])? $headers_arr['email_to'] : array();
+			$email_data  = maybe_unserialize( $item['email_data'] );
+			$headers_arr = isset( $email_data['headers_arr'] ) ? $email_data['headers_arr'] : array();
+			$emails      = isset( $headers_arr['email_to'] ) ? $headers_arr['email_to'] : array();
 
-			if(is_array($emails) && sizeof($emails) > 0){
-				$formatted_emails  = array();
-				foreach ($emails as $email){
-					if($email['recipient_name'] != ''){
-						$formatted_emails[] = $email['recipient_name'].'('.$email['address'].')';
-					}
-					else{
+			if ( is_array( $emails ) && sizeof( $emails ) > 0 ) {
+				$formatted_emails = array();
+				foreach ( $emails as $email ) {
+					if ( $email['recipient_name'] != '' ) {
+						$formatted_emails[] = $email['recipient_name'] . '(' . $email['address'] . ')';
+					} else {
 						$formatted_emails[] = $email['address'];
 					}
 				}
 
-				return implode(',', $formatted_emails);
+				return implode( ',', $formatted_emails );
 			}
 
 			return '';
@@ -125,27 +140,25 @@
 		 * @return string
 		 */
 		function column_email_reply_to( $item ) {
-			$email_data = maybe_unserialize($item['email_data']);
-			$headers_arr = isset($email_data['headers_arr'])? $email_data['headers_arr'] : array();
-			$emails = isset($headers_arr['email_reply_to'])? $headers_arr['email_reply_to'] : array();
+			$email_data  = maybe_unserialize( $item['email_data'] );
+			$headers_arr = isset( $email_data['headers_arr'] ) ? $email_data['headers_arr'] : array();
+			$emails      = isset( $headers_arr['email_reply_to'] ) ? $headers_arr['email_reply_to'] : array();
 
-			if(is_array($emails) && sizeof($emails) > 0){
-				$formatted_emails  = array();
-				foreach ($emails as $email){
-					if($email['recipient_name'] != ''){
-						$formatted_emails[] = $email['recipient_name'].'('.$email['address'].')';
-					}
-					else{
+			if ( is_array( $emails ) && sizeof( $emails ) > 0 ) {
+				$formatted_emails = array();
+				foreach ( $emails as $email ) {
+					if ( $email['recipient_name'] != '' ) {
+						$formatted_emails[] = $email['recipient_name'] . '(' . $email['address'] . ')';
+					} else {
 						$formatted_emails[] = $email['address'];
 					}
 				}
 
-				return implode(',', $formatted_emails);
+				return implode( ',', $formatted_emails );
 			}
 
 			return '';
 		}//end column_to
-
 
 
 		/**
@@ -156,22 +169,21 @@
 		 * @return string
 		 */
 		function column_email_cc( $item ) {
-			$email_data = maybe_unserialize($item['email_data']);
-			$headers_arr = isset($email_data['headers_arr'])? $email_data['headers_arr'] : array();
-			$emails = isset($headers_arr['email_cc'])? $headers_arr['email_cc'] : array();
+			$email_data  = maybe_unserialize( $item['email_data'] );
+			$headers_arr = isset( $email_data['headers_arr'] ) ? $email_data['headers_arr'] : array();
+			$emails      = isset( $headers_arr['email_cc'] ) ? $headers_arr['email_cc'] : array();
 
-			if(is_array($emails) && sizeof($emails) > 0){
-				$formatted_emails  = array();
-				foreach ($emails as $email){
-					if($email['recipient_name'] != ''){
-						$formatted_emails[] = $email['recipient_name'].'('.$email['address'].')';
-					}
-					else{
+			if ( is_array( $emails ) && sizeof( $emails ) > 0 ) {
+				$formatted_emails = array();
+				foreach ( $emails as $email ) {
+					if ( $email['recipient_name'] != '' ) {
+						$formatted_emails[] = $email['recipient_name'] . '(' . $email['address'] . ')';
+					} else {
 						$formatted_emails[] = $email['address'];
 					}
 				}
 
-				return implode(',', $formatted_emails);
+				return implode( ',', $formatted_emails );
 			}
 
 			return '';
@@ -185,22 +197,21 @@
 		 * @return string
 		 */
 		function column_email_bcc( $item ) {
-			$email_data = maybe_unserialize($item['email_data']);
-			$headers_arr = isset($email_data['headers_arr'])? $email_data['headers_arr'] : array();
-			$emails = isset($headers_arr['email_bcc'])? $headers_arr['email_bcc'] : array();
+			$email_data  = maybe_unserialize( $item['email_data'] );
+			$headers_arr = isset( $email_data['headers_arr'] ) ? $email_data['headers_arr'] : array();
+			$emails      = isset( $headers_arr['email_bcc'] ) ? $headers_arr['email_bcc'] : array();
 
-			if(is_array($emails) && sizeof($emails) > 0){
-				$formatted_emails  = array();
-				foreach ($emails as $email){
-					if($email['recipient_name'] != ''){
-						$formatted_emails[] = $email['recipient_name'].'('.$email['address'].')';
-					}
-					else{
+			if ( is_array( $emails ) && sizeof( $emails ) > 0 ) {
+				$formatted_emails = array();
+				foreach ( $emails as $email ) {
+					if ( $email['recipient_name'] != '' ) {
+						$formatted_emails[] = $email['recipient_name'] . '(' . $email['address'] . ')';
+					} else {
 						$formatted_emails[] = $email['address'];
 					}
 				}
 
-				return implode(',', $formatted_emails);
+				return implode( ',', $formatted_emails );
 			}
 
 			return '';
@@ -231,30 +242,31 @@
 		 */
 		function column_attachment( $item ) {
 
-			$email_data = maybe_unserialize($item['email_data']);
+			$email_data = maybe_unserialize( $item['email_data'] );
 
-			$attachments = isset($email_data['attachments'])? $email_data['attachments']: array();
+			$attachments = isset( $email_data['attachments'] ) ? $email_data['attachments'] : array();
 
-			if(is_array($attachments) && sizeof($attachments) > 0){
-				return implode('<br/>', $attachments);
+			if ( is_array( $attachments ) && sizeof( $attachments ) > 0 ) {
+				return implode( '<br/>', $attachments );
 			}
 
-			return esc_html__('N/A', 'cbxwpemaillogger');
+			return esc_html__( 'N/A', 'cbxwpemaillogger' );
 		}//end method column_subject
 
 
-        /**
-         * Callback for column 'status'
-         *
-         * @param array $item
-         *
-         * @return string
-         */
-        function column_status( $item ) {
+		/**
+		 * Callback for column 'status'
+		 *
+		 * @param array $item
+		 *
+		 * @return string
+		 */
+		function column_status( $item ) {
 
-        	$status = isset($item['status'])? intval($item['status']): 0;
-            return ($status)? esc_html__('Sent' , 'cbxwpemaillogger') : esc_html__('Failed', 'cbxwpemaillogger');
-        }//end method column_subject
+			$status = isset( $item['status'] ) ? intval( $item['status'] ) : 0;
+
+			return ( $status ) ? esc_html__( 'Sent', 'cbxwpemaillogger' ) : esc_html__( 'Failed', 'cbxwpemaillogger' );
+		}//end method column_subject
 
 		/**
 		 * Display col 'ip_address' value
@@ -263,9 +275,10 @@
 		 *
 		 * @return string|void
 		 */
-		function column_ip_address($item){
-        	$ip_address = isset($item['ip_address'])? $item['ip_address'] : '';
-        	return esc_attr($ip_address);
+		function column_ip_address( $item ) {
+			$ip_address = isset( $item['ip_address'] ) ? $item['ip_address'] : '';
+
+			return esc_attr( $ip_address );
 		}//end method column_ip_address
 
 		/**
@@ -279,13 +292,12 @@
 
 			$actions = array();
 
-			$actions[] = '<a class="button button-primary button-small cbxwpemaillogger_actions cbxwpemaillogger_actions_view" href="#">'.esc_html__('View', 'cbxwpemaillogger').'</a>';
+			$actions[] = '<a class="button button-primary button-small cbxwpemaillogger_actions cbxwpemaillogger_actions_view" href="#">' . esc_html__( 'View', 'cbxwpemaillogger' ) . '</a>';
 
-			$actions[] = '<a data-busy="0" data-id="'.intval($item['id']).'" class="button button-small cbxwpemaillogger_actions cbxwpemaillogger_actions_delete" href="#">'.esc_html__('Delete', 'cbxwpemaillogger').'</a>';
+			$actions[] = '<a data-busy="0" data-id="' . intval( $item['id'] ) . '" class="button button-small cbxwpemaillogger_actions cbxwpemaillogger_actions_delete" href="#">' . esc_html__( 'Delete', 'cbxwpemaillogger' ) . '</a>';
 
-			return implode(' ', $actions);
+			return implode( ' ', $actions );
 		}//end method column_subject
-
 
 
 		function column_default( $item, $column_name ) {
@@ -319,17 +331,17 @@
 
 		function get_columns() {
 			$columns = array(
-				'cb'            => '<input type="checkbox" />', //Render a checkbox instead of text
-				'date_created'  => esc_html__( 'Date', 'cbxwpemaillogger' ),
-				'email_to'      => esc_html__( 'To', 'cbxwpemaillogger' ),
-				'subject'       => esc_html__( 'Subject', 'cbxwpemaillogger' ),
-				'email_from'    => esc_html__( 'From', 'cbxwpemaillogger' ),
+				'cb'             => '<input type="checkbox" />', //Render a checkbox instead of text
+				'date_created'   => esc_html__( 'Date', 'cbxwpemaillogger' ),
+				'email_to'       => esc_html__( 'To', 'cbxwpemaillogger' ),
+				'subject'        => esc_html__( 'Subject', 'cbxwpemaillogger' ),
+				'email_from'     => esc_html__( 'From', 'cbxwpemaillogger' ),
 				'email_reply_to' => esc_html__( 'ReplyTo', 'cbxwpemaillogger' ),
-				'email_cc'      => esc_html__( 'CC', 'cbxwpemaillogger' ),
-				'email_bcc'     => esc_html__( 'BCC', 'cbxwpemaillogger' ),
-				'status'        => esc_html__( 'Status', 'cbxwpemaillogger' ),
-				'attachment'    => esc_html__( 'Attachments', 'cbxwpemaillogger' ),
-				'ip_address'    => esc_html__( 'IP Address', 'cbxwpemaillogger' ),
+				'email_cc'       => esc_html__( 'CC', 'cbxwpemaillogger' ),
+				'email_bcc'      => esc_html__( 'BCC', 'cbxwpemaillogger' ),
+				'status'         => esc_html__( 'Status', 'cbxwpemaillogger' ),
+				'attachment'     => esc_html__( 'Attachments', 'cbxwpemaillogger' ),
+				'ip_address'     => esc_html__( 'IP Address', 'cbxwpemaillogger' ),
 				//'actions'       => esc_html__( 'Actions', 'cbxwpemaillogger' )
 			);
 
@@ -340,12 +352,12 @@
 		function get_sortable_columns() {
 			$sortable_columns = array(
 				//'id'           => array( 'logs.id', false ), //true means it's already sorted
-				'date_created'  => array( 'logs.date_created', false ),
+				'date_created' => array( 'logs.date_created', false ),
 				//'email_from'    => array( 'logs.email_from', false ),
 				//'email_to'      => array( 'logs.email_to', false ),
-				'subject'       => array( 'logs.subject', false ),
+				'subject'      => array( 'logs.subject', false ),
 				'status'       => array( 'logs.status', false ),
-				'ip_address'       => array( 'logs.ip_address', false ),
+				'ip_address'   => array( 'logs.ip_address', false ),
 			);
 
 			return apply_filters( 'cbxwpemaillogger_log_listing_sortable_columns', $sortable_columns );

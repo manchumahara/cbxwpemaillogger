@@ -2,11 +2,12 @@
 	'use strict';
 
 	$(document).ready(function($) {
+		//delete email log
 		$('.cbxwpemaillogger_actions_delete').on('click', function (e) {
 			e.preventDefault();
 
 			var $this = $(this);
-			console.log($this);
+
 
 			var $id 	= parseInt($this.data('id'));
 			var $busy   = parseInt($this.data('busy'));
@@ -57,6 +58,42 @@
 
 			}
 		});//end ajax log delete
+
+		//re-send email
+		$('.cbxwpemaillogger_actions_resend').on('click', function (e) {
+			e.preventDefault();
+
+			var $this = $(this);
+
+
+			var $id 	= parseInt($this.data('id'));
+			var $busy   = parseInt($this.data('busy'));
+
+			if($busy == 0){
+
+				// Ok
+				//send ajax request to delete
+				$this.data('busy', 1);
+
+				$.ajax({
+
+					type: "post",
+					dataType: "json",
+					url: cbxwpemaillogger_dashboard.ajaxurl,
+					data: {
+						action: "cbxwpemaillogger_log_resend",
+						id: $id,
+						security: cbxwpemaillogger_dashboard.nonce
+					},
+					success: function (data, textStatus, XMLHttpRequest) {
+						$this.data('busy', 0);
+
+						Ply.dialog("alert", data.message);
+					}
+				});
+
+			}
+		});//end ajax email resend
 	});
 
 })( jQuery );
