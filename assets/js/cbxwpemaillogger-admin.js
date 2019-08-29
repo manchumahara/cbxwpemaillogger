@@ -2,6 +2,20 @@
 	'use strict';
 
 	$(document).ready(function($) {
+
+		$('#cbxscratingreviewlogsearch-search-input').attr("placeholder", cbxwpemaillogger_dashboard.search_placeholder);
+
+        //apply flatpickr javascript
+        $("#cbxscratingreviewlog-logdate-input").flatpickr({
+            disableMobile: "true",
+            minDate   : new Date(),
+            enableTime: false,
+            dateFormat: 'Y-m-d',
+            time_24hr    : true,
+            defaultHour  : 0,
+            defaultMinute: 0,
+        });
+
 		//delete email log
 		$('.cbxwpemaillogger_actions_delete').on('click', function (e) {
 			e.preventDefault();

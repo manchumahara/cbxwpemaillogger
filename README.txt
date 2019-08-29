@@ -3,7 +3,7 @@ Contributors: codeboxr, manchumahara
 Tags: email, log, email log, debug, email debug, email log
 Requires at least: 3.0.1
 Tested up to: 5.2.2
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -13,7 +13,7 @@ This plugin helps to log email and displays in admin panel and more.
 
 This plugin helps to log any email sent from wordpress.
 
-Main Features:
+**Main Features:**
 
 * Logs every email sent
 * Logs email send success or fail(Bullet proof way to detect email send or not)
@@ -21,11 +21,18 @@ Main Features:
 * View Email Log
 * View Email Preview
 * ReSend email from the list window
+* Delete X Days old logs from Log listing
+* Auto delete X Days old logs using wordpress native event schedule
+* Custom Setting panel
+* Delete custom options created by this plugin and email logs on uninstall(it's not deactivate, uninstall means delete plugin)
 
 
 == Installation ==
 
 This section describes how to install the plugin and get it working.
+
+> this plugins add an extra header to email to tracking email sent success or not. The custom header added in email is in format
+  'x-cbxwpemaillogger-id: $log_id'
 
 e.g.
 
@@ -38,13 +45,25 @@ e.g.
 
 == Screenshots ==
 
+Yet to add
 
 == Changelog ==
+
+= 1.0.2 =
+
+* Added option panel
+* Delete X Days old logs from Log listing
+* Auto delete X Days old logs using wordpress native event schedule
+* Custom Setting panel
+* Delete custom options created by this plugin and email logs on uninstall(it's not deactivate, uninstall means delete plugin)
+
 = 1.0.1 =
+
 * View Email Log
 * View Email Template in Popup
 * View Email log template in single view display
 * Single click resend email
 
 = 1.0.0 =
+
 * First public release

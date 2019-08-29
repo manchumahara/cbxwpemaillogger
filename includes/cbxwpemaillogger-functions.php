@@ -99,4 +99,6 @@
 		include $located;
 
 		do_action( 'cbxwpemaillogger_after_template_part', $template_name, $template_path, $located, $args );
+
+
 	}//end function cbxwpemaillogger_get_template

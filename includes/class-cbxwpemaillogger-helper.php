@@ -24,6 +24,34 @@
 	 * Class CBXWPEmailLoggerHelper
 	 */
 	class CBXWPEmailLoggerHelper {
+
+		/**
+		 * Get all  core tables list
+		 */
+		public static function getAllDBTablesList() {
+			global $wpdb;
+
+			$table_cbxwpemaillogger = $wpdb->prefix . 'cbxwpemaillogger_log';
+
+			$table_names                     = array();
+			$table_names['cbxwpemaillogger'] = $table_cbxwpemaillogger;
+
+
+			return apply_filters( 'cbxwpemaillogger_table_list', $table_names );
+		}//end method getAllDBTablesList
+
+		/**
+		 * List all global option name with prefix cbxuseronline_
+		 */
+		public static function getAllOptionNames() {
+			global $wpdb;
+
+			$prefix       = 'cbxwpemaillogger_';
+			$option_names = $wpdb->get_results( "SELECT * FROM {$wpdb->options} WHERE option_name LIKE '{$prefix}%'", ARRAY_A );
+
+			return apply_filters( 'cbxwpemaillogger_option_names', $option_names );
+		}//end method getAllOptionNames
+
 		/**
 		 * Get IP address
 		 *
@@ -101,4 +129,34 @@
 
 			return $log;
 		}//end method SingleLog
+
+
+		/**
+		 * Delete $log_old_days days old log
+		 *
+		 * @param int $log_old_days
+		 */
+		public static function delete_old_log( $log_old_days = 30 ) {
+
+			global $wpdb;
+			$table_cbxwpemaillogger = $wpdb->prefix . 'cbxwpemaillogger_log';
+
+			$sql_select = "SELECT log.* FROM $table_cbxwpemaillogger AS log";
+
+			$logs = $wpdb->get_results( "$sql_select WHERE log.date_created <= NOW() - INTERVAL $log_old_days DAY", 'ARRAY_A' );
+
+			if ( is_array( $logs ) && sizeof( $logs ) > 0 ) {
+				foreach ( $logs as $log ) {
+					$id = intval( $log['id'] );
+
+					do_action( 'cbxwpemaillogger_log_delete_before', $id );
+
+					$delete_status = $wpdb->query( $wpdb->prepare( "DELETE FROM $table_cbxwpemaillogger WHERE id=%d", $id ) );
+
+					if ( $delete_status !== false ) {
+						do_action( 'cbxwpemaillogger_log_delete_after' );
+					}
+				}
+			}
+		}//end method delete_old_log
 	}//end class CBXWPEmailLoggerHelper

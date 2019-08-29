@@ -39,7 +39,11 @@
 								<?php $cbxwpemaillogger_logs->views(); ?>
 
 								<input type="hidden" name="page" value="<?php echo $_REQUEST['page'] ?>" />
+
 								<?php $cbxwpemaillogger_logs->search_box( esc_html__( 'Search', 'cbxwpemaillogger' ), 'cbxscratingreviewlogsearch' ); ?>
+								<p class="search-box">
+									<input type="text" id="cbxscratingreviewlog-logdate-input" name="logdate" value="<?php echo isset( $_REQUEST['logdate'] ) ? esc_attr( wp_unslash( $_REQUEST['logdate'] ) ) : ''; ?>" placeholder="<?php esc_html_e( 'Date', 'cbxwpemaillogger' ); ?>" />
+								</p>
 
 								<?php $cbxwpemaillogger_logs->display() ?>
 							</form>

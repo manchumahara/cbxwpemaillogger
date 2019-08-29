@@ -41,6 +41,18 @@
 
 			//create tables
 			CBXWPEmailLogger_Activator::createTables();
+
+			$settings = new CBXWPEmailLoggerSettings();
+
+			$delete_old_log = $settings->get_option( 'delete_old_log', 'cbxwpemaillogger_general', 'no' );
+
+			if ( $delete_old_log == 'yes' ) {
+				if ( ! wp_next_scheduled( 'cbxwpemaillogger_daily_event' ) ) {
+					wp_schedule_event( time(), 'daily', 'cbxwpemaillogger_daily_event' );
+				}
+			}
+
+
 		}//end method activate
 
 		/**

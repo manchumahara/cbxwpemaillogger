@@ -68,15 +68,15 @@
 
 			$body_url = add_query_arg( array(
 				'action'   => 'cbxwpemaillogger_log_body',
-				'id' => intval( $item['id'] ),
+				'id'       => intval( $item['id'] ),
 				'_wpnonce' => wp_create_nonce( 'cbxwpemaillogger' )
-			) , site_url());
+			), site_url() );
 
-			$actions['view']   = '<a class="cbxwpemaillogger_actions cbxwpemaillogger_actions_view" href="' . esc_url( $view_url ) . '">' . esc_html__( 'View', 'cbxwpemaillogger' ) . '</a>';
+			$actions['view'] = '<a class="cbxwpemaillogger_actions cbxwpemaillogger_actions_view" href="' . esc_url( $view_url ) . '">' . esc_html__( 'View', 'cbxwpemaillogger' ) . '</a>';
 
 			$actions['delete'] = '<a data-busy="0" data-id="' . intval( $item['id'] ) . '" class="cbxwpemaillogger_actions cbxwpemaillogger_actions_delete" href="#">' . esc_html__( 'Delete', 'cbxwpemaillogger' ) . '</a>';
 
-			$actions['template'] = '<a  class="thickbox cbxwpemaillogger_actions cbxwpemaillogger_actions_template" href="'.esc_url($body_url).'">' . esc_html__( 'Template', 'cbxwpemaillogger' ) . '</a>';
+			$actions['template'] = '<a  class="thickbox cbxwpemaillogger_actions cbxwpemaillogger_actions_template" href="' . esc_url( $body_url ) . '">' . esc_html__( 'Template', 'cbxwpemaillogger' ) . '</a>';
 
 			$actions['resend'] = '<a data-busy="0" data-id="' . intval( $item['id'] ) . '" class="cbxwpemaillogger_actions cbxwpemaillogger_actions_resend" href="#">' . esc_html__( 'ReSend', 'cbxwpemaillogger' ) . '</a>';
 
@@ -395,6 +395,25 @@
 
 			}//end delete all
 
+			if ( isset( $_REQUEST['delete_all_old'] ) && ! empty( $_REQUEST['delete_all_old'] ) ) {
+
+				$settings = new CBXWPEmailLoggerSettings();
+
+				$delete_old_log = $settings->get_option( 'delete_old_log', 'cbxwpemaillogger_general', 'no' );
+
+				if ( $delete_old_log == 'yes' ) {
+
+					$log_old_days = intval( $settings->get_option( 'log_old_days', 'cbxwpemaillogger_general', '30' ) );
+
+					if ( $log_old_days > 0 ) {
+
+						CBXWPEmailLoggerHelper::delete_old_log( $log_old_days );
+
+					}
+				}
+
+			}//end delete all
+
 
 			//Detect when a bulk action is being triggered...
 			if ( ! empty( $_REQUEST['cbxwpemaillogger'] ) ) {
@@ -451,14 +470,16 @@
 
 			$this->process_bulk_action();
 
-			$search = ( isset( $_REQUEST['s'] ) && $_REQUEST['s'] != '' ) ? sanitize_text_field( $_REQUEST['s'] ) : '';
 
-			$order   = ( isset( $_REQUEST['order'] ) && $_REQUEST['order'] != '' ) ? $_REQUEST['order'] : 'DESC';
-			$orderby = ( isset( $_REQUEST['orderby'] ) && $_REQUEST['orderby'] != '' ) ? $_REQUEST['orderby'] : 'logs.id';
+			$search  = isset( $_REQUEST['s'] ) ? esc_attr( wp_unslash( $_REQUEST['s'] ) ) : '';
+			$logdate = ( isset( $_REQUEST['logdate'] ) && $_REQUEST['logdate'] != '' ) ? sanitize_text_field( $_REQUEST['logdate'] ) : '';
+
+			$order   = ( isset( $_REQUEST['order'] ) && $_REQUEST['order'] != '' ) ? sanitize_text_field( $_REQUEST['order'] ) : 'DESC';
+			$orderby = ( isset( $_REQUEST['orderby'] ) && $_REQUEST['orderby'] != '' ) ? sanitize_text_field( $_REQUEST['orderby'] ) : 'logs.id';
 
 
-			$data        = $this->getLogData( $search, $orderby, $order, $per_page, $current_page );
-			$total_items = intval( $this->getLogDataCount( $search ) );
+			$data        = $this->getLogData( $search, $logdate, $orderby, $order, $per_page, $current_page );
+			$total_items = intval( $this->getLogDataCount( $search, $logdate ) );
 
 			$this->items = $data;
 
@@ -484,7 +505,7 @@
 		 *
 		 * @return array|null|object
 		 */
-		public function getLogData( $search = '', $orderby = 'logs.id', $order = 'DESC', $perpage = 20, $page = 1 ) {
+		public function getLogData( $search = '', $logdate = '', $orderby = 'logs.id', $order = 'DESC', $perpage = 20, $page = 1 ) {
 
 			global $wpdb;
 
@@ -500,6 +521,14 @@
 				}
 
 				$where_sql .= $wpdb->prepare( " logs.subject LIKE '%%%s%%' OR logs.email_data LIKE '%%%s%%' ", $search, $search );
+			}
+
+			if ( $logdate != '' ) {
+				if ( $where_sql != '' ) {
+					$where_sql .= ' AND ';
+				}
+
+				$where_sql .= $wpdb->prepare( " DATE(logs.date_created) = %s ", $logdate );
 			}
 
 
@@ -525,10 +554,11 @@
 		 * Logs data count
 		 *
 		 * @param string $search
+		 * @param string $logdate
 		 *
 		 * @return null|string
 		 */
-		public function getLogDataCount( $search = '' ) {
+		public function getLogDataCount( $search = '', $logdate = '' ) {
 
 			global $wpdb;
 			$table_cbxwpemaillogger = $wpdb->prefix . 'cbxwpemaillogger_log';
@@ -544,6 +574,14 @@
 				}
 
 				$where_sql .= $wpdb->prepare( " logs.subject LIKE '%%%s%%' OR logs.email_data LIKE '%%%s%%' ", $search, $search );
+			}
+
+			if ( $logdate != '' ) {
+				if ( $where_sql != '' ) {
+					$where_sql .= ' AND ';
+				}
+
+				$where_sql .= $wpdb->prepare( " DATE(logs.date_created) = %s ", $logdate );
 			}
 
 			$where_sql = apply_filters( 'cbxwpemaillogger_log_listing_where_total', $where_sql, $search );
@@ -608,6 +646,7 @@
 
 					if ( $this->has_items() ) {
 						submit_button( esc_html__( 'Delete All', 'cbxwpemaillogger' ), 'apply', 'delete_all', false );
+						submit_button( esc_html__( 'Delete Old Logs', 'cbxwpemaillogger' ), 'apply', 'delete_all_old', false );
 					} ?>
 			</div>
 			<?php

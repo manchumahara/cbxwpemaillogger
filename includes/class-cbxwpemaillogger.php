@@ -113,6 +113,7 @@
 			 */
 			require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/cbxwpemaillogger-functions.php';
 			require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-cbxwpemaillogger-helper.php';
+			require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-cbxwpemaillogger-settings.php'; //add the setting api
 
 			/**
 			 * The class responsible for defining admin log table listing
@@ -163,7 +164,7 @@
 			$plugin_admin = new CBXWPEmailLogger_Admin( $this->get_plugin_name(), $this->get_version() );
 
 			//create admin menu page
-			//$this->loader->add_action( 'admin_init', $plugin_admin, 'setting_init' );
+			$this->loader->add_action( 'admin_init', $plugin_admin, 'admin_init' );
 			$this->loader->add_action( 'admin_menu', $plugin_admin, 'admin_pages' );
 			$this->loader->add_filter( 'set-screen-option', $plugin_admin, 'cbxscratingreview_listing_per_page', 10, 3 );
 
@@ -172,8 +173,11 @@
 
 			$this->loader->add_filter( 'wp_mail', $plugin_admin, 'insert_log' );
 			$this->loader->add_action( 'wp_mail_failed', $plugin_admin, 'email_sent_failed' );
-			$this->loader->add_action( 'wp_ajax_cbxwpemaillogger_log_delete', $plugin_admin, 'email_log_delete'  ); //email_log_delete
-			$this->loader->add_action( 'wp_ajax_cbxwpemaillogger_log_resend', $plugin_admin, 'email_resend'  ); //resend email
+			$this->loader->add_action( 'wp_ajax_cbxwpemaillogger_log_delete', $plugin_admin, 'email_log_delete' ); //email_log_delete
+			$this->loader->add_action( 'wp_ajax_cbxwpemaillogger_log_resend', $plugin_admin, 'email_resend' ); //resend email
+
+			//cron event
+			$this->loader->add_action( 'cbxwpemaillogger_daily_event', $plugin_admin, 'delete_old_log' ); //delete x days old logs every day
 
 		}//end method define_admin_hooks
 

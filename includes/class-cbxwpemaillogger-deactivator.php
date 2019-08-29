@@ -30,7 +30,7 @@
 		 * @since    1.0.0
 		 */
 		public static function deactivate() {
-
+			wp_clear_scheduled_hook( 'cbxwpemaillogger_daily_event' );
 		}
 
 	}//end class CBXWPEmailLogger_Deactivator
