@@ -76,9 +76,9 @@
 
 			$actions['delete'] = '<a data-busy="0" data-id="' . intval( $item['id'] ) . '" class="cbxwpemaillogger_actions cbxwpemaillogger_actions_delete" href="#">' . esc_html__( 'Delete', 'cbxwpemaillogger' ) . '</a>';
 
-			$actions['template'] = '<a  class="thickbox cbxwpemaillogger_actions cbxwpemaillogger_actions_template" href="' . esc_url( $body_url ) . '">' . esc_html__( 'Template', 'cbxwpemaillogger' ) . '</a>';
+			$actions['template'] = '<a title="'.esc_html__('Email Template/Body Preview', 'cbxwpemaillogger').'" class="thickbox cbxwpemaillogger_actions cbxwpemaillogger_actions_template" href="' . esc_url( $body_url ) . '">' . esc_html__( 'Template', 'cbxwpemaillogger' ) . '</a>';
 
-			$actions['resend'] = '<a data-busy="0" data-id="' . intval( $item['id'] ) . '" class="cbxwpemaillogger_actions cbxwpemaillogger_actions_resend" href="#">' . esc_html__( 'ReSend', 'cbxwpemaillogger' ) . '</a>';
+			$actions['resend'] = '<a  data-busy="0" data-id="' . intval( $item['id'] ) . '" class="cbxwpemaillogger_actions cbxwpemaillogger_actions_resend" href="#">' . esc_html__( 'ReSend', 'cbxwpemaillogger' ) . '</a>';
 
 			$date_created = '';
 			if ( $item['date_created'] != '' ) {
@@ -101,7 +101,7 @@
 			$headers_arr = isset( $email_data['headers_arr'] ) ? $email_data['headers_arr'] : array();
 			$email_from  = isset( $headers_arr['email_from'] ) ? $headers_arr['email_from'] : array();
 
-			return $email_from['from_name'] . '(' . $email_from['from_email'] . ')';
+			return $email_from['from_name'] . '(' . sanitize_email($email_from['from_email']) . ')';
 		}//end column_to
 
 		/**
@@ -120,9 +120,9 @@
 				$formatted_emails = array();
 				foreach ( $emails as $email ) {
 					if ( $email['recipient_name'] != '' ) {
-						$formatted_emails[] = $email['recipient_name'] . '(' . $email['address'] . ')';
+						$formatted_emails[] = $email['recipient_name'] . '(' . sanitize_email($email['address']) . ')';
 					} else {
-						$formatted_emails[] = $email['address'];
+						$formatted_emails[] = sanitize_email($email['address']);
 					}
 				}
 
@@ -148,9 +148,9 @@
 				$formatted_emails = array();
 				foreach ( $emails as $email ) {
 					if ( $email['recipient_name'] != '' ) {
-						$formatted_emails[] = $email['recipient_name'] . '(' . $email['address'] . ')';
+						$formatted_emails[] = $email['recipient_name'] . '(' . sanitize_email($email['address']) . ')';
 					} else {
-						$formatted_emails[] = $email['address'];
+						$formatted_emails[] = sanitize_email($email['address']);
 					}
 				}
 
@@ -177,9 +177,9 @@
 				$formatted_emails = array();
 				foreach ( $emails as $email ) {
 					if ( $email['recipient_name'] != '' ) {
-						$formatted_emails[] = $email['recipient_name'] . '(' . $email['address'] . ')';
+						$formatted_emails[] = $email['recipient_name'] . '(' . sanitize_email($email['address']) . ')';
 					} else {
-						$formatted_emails[] = $email['address'];
+						$formatted_emails[] = sanitize_email($email['address']);
 					}
 				}
 
@@ -205,9 +205,9 @@
 				$formatted_emails = array();
 				foreach ( $emails as $email ) {
 					if ( $email['recipient_name'] != '' ) {
-						$formatted_emails[] = $email['recipient_name'] . '(' . $email['address'] . ')';
+						$formatted_emails[] = $email['recipient_name'] . '(' . sanitize_email($email['address']) . ')';
 					} else {
-						$formatted_emails[] = $email['address'];
+						$formatted_emails[] = sanitize_email($email['address']);
 					}
 				}
 
@@ -227,7 +227,7 @@
 		 * @return string
 		 */
 		function column_subject( $item ) {
-			$subject = stripslashes( $item['subject'] );
+			$subject = esc_attr(wp_unslash($item['subject'] ));
 
 			return $subject;
 		}//end method column_subject

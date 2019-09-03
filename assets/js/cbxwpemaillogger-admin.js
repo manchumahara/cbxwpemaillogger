@@ -84,29 +84,42 @@
 			var $busy   = parseInt($this.data('busy'));
 
 			if($busy == 0){
+				Ply.dialog({
+					"confirm-step": {
+						ui: "confirm",
+						data: {
+							text: cbxwpemaillogger_dashboard.resendconfirm,
+							ok: cbxwpemaillogger_dashboard.deleteconfirmok, // button text
+							cancel: cbxwpemaillogger_dashboard.deleteconfirmcancel
+						},
+						backEffect: "3d-flip[-180,180]"
+					}
+				}).always(function (ui) {
+					if (ui.state) {
+// Ok
+						//send ajax request to delete
+						$this.data('busy', 1);
 
-				// Ok
-				//send ajax request to delete
-				$this.data('busy', 1);
+						$.ajax({
 
-				$.ajax({
+							type: "post",
+							dataType: "json",
+							url: cbxwpemaillogger_dashboard.ajaxurl,
+							data: {
+								action: "cbxwpemaillogger_log_resend",
+								id: $id,
+								security: cbxwpemaillogger_dashboard.nonce
+							},
+							success: function (data, textStatus, XMLHttpRequest) {
+								$this.data('busy', 0);
 
-					type: "post",
-					dataType: "json",
-					url: cbxwpemaillogger_dashboard.ajaxurl,
-					data: {
-						action: "cbxwpemaillogger_log_resend",
-						id: $id,
-						security: cbxwpemaillogger_dashboard.nonce
-					},
-					success: function (data, textStatus, XMLHttpRequest) {
-						$this.data('busy', 0);
-
-						Ply.dialog("alert", data.message);
+								Ply.dialog("alert", data.message);
+							}
+						});
 					}
 				});
+			}//end checking busy
 
-			}
 		});//end ajax email resend
 	});
 

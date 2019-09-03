@@ -2,32 +2,33 @@
 	if ( ! defined( 'WPINC' ) ) {
 		die;
 	}
+
 ?>
 <div id="postbox-container-1" class="postbox-container">
 	<div class="meta-box-sortables">
 		<div class="postbox">
-			<h3>Plugin Info</h3>
+			<h3><?php esc_html_e('Plugin Info', 'cbxwpemaillogger'); ?></h3>
 			<div class="inside">
-				<p>Plugin Name : <?php echo $plugin_data['Title']; ?> <?php echo $plugin_data['Version']; ?></p>
-				<p>Author : <?php echo $plugin_data['Author'] ?></p>
-				<p>Website : <a href="http://codeboxr.com" target="_blank">codeboxr.com</a></p>
+				<p>Plugin Name : <?php echo $plugin_data['Title']; ?> <?php echo esc_attr($plugin_data['Version']); ?></p>
+				<p>Author : <?php echo $plugin_data['Author']; ?></p>
+				<p>Website : <a href="https://codeboxr.com" target="_blank">codeboxr.com</a></p>
 				<p>Email : <a href="mailto:info@codeboxr.com" target="_blank">info@codeboxr.com</a></p>
 				<p>Twitter : @<a href="http://twitter.com/codeboxr" target="_blank">Codeboxr</a></p>
-				<p>Facebook : <a href="http://facebook.com/codeboxr" target="_blank">http://facebook.com/codeboxr</a></p>
+				<p>Facebook : <a href="http://facebook.com/codeboxr" target="_blank">https://facebook.com/codeboxr</a></p>
 				<p>Linkedin : <a href="www.linkedin.com/company/codeboxr" target="_blank">codeboxr</a></p>
 
 			</div>
 		</div>
 		<div class="postbox">
-			<h3><?php _e( 'Help & Supports', 'cbxpetition' ); ?></h3>
+			<h3><?php esc_html_e( 'Help & Supports', 'cbxwpemaillogger' ); ?></h3>
 			<div class="inside">
-				<p>Support: <a href="http://codeboxr.com/contact-us" target="_blank">Contact Us</a></p>
+				<p><?php esc_html_e('Support', 'cbxwpemaillogger'); ?>: <a href="http://codeboxr.com/contact-us" target="_blank">Contact Us</a></p>
 				<p><i class="icon-envelope"></i> <a href="mailto:info@codeboxr.com">info@codeboxr.com</a></p>
 				<p><i class="icon-phone"></i> <a href="tel:008801717308615">+8801717308615</a></p>
 			</div>
 		</div>
 		<div class="postbox">
-			<h3><?php _e( 'Codeboxr Updates', 'cbxpetition' ); ?></h3>
+			<h3><?php esc_html_e( 'Codeboxr Updates', 'cbxwpemaillogger' ); ?></h3>
 			<div class="inside">
 				<?php
 					include_once( ABSPATH . WPINC . '/feed.php' );
@@ -44,8 +45,8 @@
 							echo '<ul>';
 							foreach ( $blocks as $block ) {
 								$url = $block->get_permalink();
-								echo '<li><a target="_blank" href="' . $url . '">';
-								echo '<strong>' . $block->get_title() . '</strong></a></li>';
+								echo '<li><a target="_blank" href="' . esc_url($url) . '">';
+								echo '<strong>' . esc_attr($block->get_title()) . '</strong></a></li>';
 							}//end foreach
 							echo '</ul>';
 						endif;
@@ -54,7 +55,7 @@
 			</div>
 		</div>
 		<div class="postbox">
-			<h3><?php _e( 'Other Wordpress Plugins', 'cbxpetition' ); ?></h3>
+			<h3><?php esc_html_e( 'Other Wordpress Plugins', 'cbxwpemaillogger' ); ?></h3>
 			<div class="inside">
 				<?php
 					include_once( ABSPATH . WPINC . '/feed.php' );
@@ -84,7 +85,7 @@
 			</div>
 		</div>
 		<div class="postbox">
-			<h3><?php _e( 'Codeboxr on facebook', 'cbxpetition' ) ?></h3>
+			<h3><?php esc_html_e( 'Codeboxr on facebook', 'cbxwpemaillogger' ) ?></h3>
 			<div class="inside">
 				<iframe
 					src="//www.facebook.com/plugins/likebox.php?href=http%3A%2F%2Fwww.facebook.com%2Fcodeboxr&amp;width=260&amp;height=258&amp;show_faces=true&amp;colorscheme=light&amp;stream=false&amp;border_color&amp;header=false&amp;appId=558248797526834"

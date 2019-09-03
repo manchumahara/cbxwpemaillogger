@@ -104,12 +104,11 @@
 			$table_counter = 1;
 
 			foreach ( $table_names as $key => $value ) {
-				$table_html .= '<p>' . str_pad( $table_counter, 2, '0', STR_PAD_LEFT ) . '. ' . $wpdb->prefix . $key . ' - (<code>' . $value . '</code>)</p>';
+				$table_html .= '<p>' . str_pad( $table_counter, 2, '0', STR_PAD_LEFT ) . '. ' . $wpdb->prefix . esc_html($key) . ' - (<code>' . esc_html($value) . '</code>)</p>';
 				$table_counter ++;
 			}
 
-			$table_html .= '<p><strong>' . esc_html__( 'Following option values created by this plugin will be deleted from wordpress option table',
-					'cbxwpemaillogger' ) . '</strong></p>';
+			$table_html .= '<p><strong>' . esc_html__( 'Following option values created by this plugin will be deleted from wordpress option table','cbxwpemaillogger' ) . '</strong></p>';
 
 
 			$option_values = CBXWPEmailLoggerHelper::getAllOptionNames();
@@ -117,7 +116,7 @@
 			$table_counter = 1;
 
 			foreach ( $option_values as $key => $value ) {
-				$table_html .= '<p>' . str_pad( $table_counter, 2, '0', STR_PAD_LEFT ) . '. ' . $value['option_name'] . ' - ' . $value['option_id'] . ' - (<code style="overflow-wrap: break-word; word-break: break-all;">' . $value['option_value'] . '</code>)</p>';
+				$table_html .= '<p>' . str_pad( $table_counter, 2, '0', STR_PAD_LEFT ) . '. ' . esc_html($value['option_name']) . ' - ' . intval($value['option_id']) . ' - (<code style="overflow-wrap: break-word; word-break: break-all;">' . $value['option_value'] . '</code>)</p>';
 
 				$table_counter ++;
 			}
@@ -134,6 +133,7 @@
 							'no'  => esc_html__( 'No', 'cbxwpemaillogger' ),
 						),
 						'default' => 'no',
+						'sanitize_callback' => 'esc_html',
 					),
 					'log_old_days'   => array(
 						'name'    => 'log_old_days',
@@ -141,21 +141,22 @@
 						'desc'    => '<p>' . esc_html__( 'Number of days email will be deleted as old based on email send date', 'cbxwpemaillogger' ) . '</p>',
 						'type'    => 'text',
 						'default' => '30',
+						'sanitize_callback' => 'absint',
 					),
 				),
 				'cbxwpemaillogger_tools'   => array(
 					'delete_global_config' => array(
 						'name'    => 'delete_global_config',
 						'label'   => esc_html__( 'On Uninstall delete plugin data', 'cbxwpemaillogger' ),
-						'desc'    => '<p>' . __( 'Delete Global Config data and custom table created by this plugin on uninstall.',
-								'cbxwpemaillogger' ) . '</p>' . '<p>' . __( '<strong>Please note that this process can not be undone and it is recommended to keep full database backup before doing this.</strong>',
-								'cbxwpemaillogger' ) . '</p>' . $table_html,
+						'desc'    => '<p>' . esc_html__( 'Delete Global Config data and custom table created by this plugin on uninstall.',
+								'cbxwpemaillogger' ) . '</p>' . '<p>' . wp_kses(__( '<strong>Please note that this process can not be undone and it is recommended to keep full database backup before doing this.</strong>',	'cbxwpemaillogger' ), array('strong' => array()) ). '</p>' . $table_html,
 						'type'    => 'radio',
 						'options' => array(
 							'yes' => esc_html__( 'Yes', 'cbxwpemaillogger' ),
 							'no'  => esc_html__( 'No', 'cbxwpemaillogger' ),
 						),
 						'default' => 'no',
+						'sanitize_callback' => 'esc_html',
 					),
 				),
 			);
@@ -172,7 +173,7 @@
 			}
 
 			foreach ( $sections as $section ) {
-				$settings_fields[ $section['id'] ] = apply_filters( 'cbxwpemaillogger_global_' . $section['id'] . '_fields',
+				$settings_fields[ $section['id'] ] = apply_filters( 'cbxwpemaillogger_global_' . esc_attr($section['id']) . '_fields',
 					$settings_builtin_fields[ $section['id'] ] );
 			}
 
@@ -186,12 +187,14 @@
 		 */
 		public function admin_pages() {
 
+			$page = isset( $_GET['page'] ) ? esc_attr(wp_unslash($_GET['page'])) : '';
+
 			//review listing page
 			$email_logger_menu_hook = add_menu_page( esc_html__( 'CBX Email Logger Dashboard', 'cbxwpemaillogger' ), esc_html__( 'CBX Email Logs', 'cbxwpemaillogger' ), 'manage_options', 'cbxwpemaillogger',
 				array( $this, 'display_cbxwpemaillogger_listing_page' ), 'dashicons-email', '6' );
 
 			//add screen option save option
-			if ( isset( $_GET['page'] ) && $_GET['page'] == 'cbxwpemaillogger' ) {
+			if ( $page == 'cbxwpemaillogger' ) {
 				add_action( "load-$email_logger_menu_hook", array( $this, 'cbxwpemaillogger_review_listing' ) );
 			}
 
@@ -210,11 +213,11 @@
 		 * Admin listing menu callback
 		 */
 		public function display_cbxwpemaillogger_listing_page() {
-			$view = isset( $_REQUEST['view'] ) ? esc_attr( $_REQUEST['view'] ) : 'list';
+			$view = isset( $_REQUEST['view'] ) ? esc_attr( wp_unslash($_REQUEST['view']) ) : 'list';
 
 
 			if ( $view == 'list' ) {
-				include( cbxwpemaillogger_locate_template( 'admin/cbxwpemaillogger-logs.php' ) );
+				include( cbxwpemaillogger_locate_template( 'admin/cbxwpemaillogger-logs.php') );
 			} /*else if($view == 'body'){
 				$log_id = isset($_REQUEST['log_id'])? intval($_REQUEST['log_id']) : 0;
 				$item = CBXWPEmailLoggerHelper::SingleLog($log_id);
@@ -225,7 +228,7 @@
 
 				$item = CBXWPEmailLoggerHelper::SingleLog( $log_id );
 
-				include( cbxwpemaillogger_locate_template( 'admin/cbxwpemaillogger-log.php' ) );
+				include( cbxwpemaillogger_locate_template( 'admin/cbxwpemaillogger-log.php'));
 			}
 
 		}//end method display_cbxwpemaillogger_listing_page
@@ -245,7 +248,7 @@
 			}
 
 			return $new_status;
-		}
+		}//end cbxscratingreview_listing_per_page
 
 		/**
 		 * Display settings
@@ -263,7 +266,6 @@
 		 * Add screen option for log listing
 		 */
 		public function cbxwpemaillogger_review_listing() {
-
 			$option = 'per_page';
 
 			$args = array(
@@ -282,7 +284,7 @@
 		 */
 		public function enqueue_styles( $hook ) {
 
-			$page = isset( $_GET['page'] ) ? $_GET['page'] : '';
+			$page = isset( $_GET['page'] ) ? esc_attr(wp_unslash($_GET['page'])) : '';
 
 			if ( $page == 'cbxwpemaillogger' ) {
 				wp_register_style( 'ply', plugin_dir_url( __FILE__ ) . '../assets/js/ply/ply.css', array(), $this->version, 'all' );
@@ -316,7 +318,7 @@
 		 * @since    1.0.0
 		 */
 		public function enqueue_scripts( $hook ) {
-			$page = isset( $_GET['page'] ) ? $_GET['page'] : '';
+			$page = isset( $_GET['page'] ) ? esc_attr(wp_unslash($_GET['page'])) : '';
 
 			if ( $page == 'cbxwpemaillogger' ) {
 				wp_register_script( 'ply', plugin_dir_url( __FILE__ ) . '../assets/js/ply/ply.min.js', array( 'jquery' ), $this->version, true );
@@ -334,6 +336,7 @@
 					'upload_title'        => esc_html__( 'Window Title', 'cbxwpemaillogger' ),
 					'delete'              => esc_html__( 'Delete', 'cbxwpemaillogger' ),
 					'deleteconfirm'       => esc_html__( 'Are you sure to delete? On successful delete information will be lost forever.', 'cbxwpemaillogger' ),
+					'resendconfirm'       => esc_html__( 'Are you sure to Resend? This action can not be reversed.', 'cbxwpemaillogger' ),
 					'deleteconfirmok'     => esc_html__( 'Sure', 'cbxwpemaillogger' ),
 					'deleteconfirmcancel' => esc_html__( 'Oh! No', 'cbxwpemaillogger' ),
 					'ajaxurl'             => admin_url( 'admin-ajax.php' ),
@@ -396,8 +399,8 @@
 			}
 
 
-			$subject = isset( $atts['subject'] ) ? $atts['subject'] : '';
-			$body    = isset( $atts['message'] ) ? $atts['message'] : ( isset( $atts['html'] ) ? $atts['html'] : '' );
+			$subject = isset( $atts['subject'] ) ? wp_unslash(sanitize_text_field($atts['subject'])) : '';
+			$body    = isset( $atts['message'] ) ? wp_unslash(sanitize_textarea_field($atts['message'])) : ( isset( $atts['html'] ) ? wp_unslash(sanitize_textarea_field($atts['html'])) : '' );
 			//$htm
 
 			$headers     = isset( $atts['headers'] ) ? $atts['headers'] : array();
@@ -655,6 +658,7 @@
 			$headers = isset( $mail_error_data['headers'] ) ? $mail_error_data['headers'] : array();
 
 			if ( isset( $headers['x-cbxwpemaillogger-id'] ) && intval( $headers['x-cbxwpemaillogger-id'] ) > 0 ) {
+
 				$log_id = intval( $headers['x-cbxwpemaillogger-id'] );
 
 
@@ -732,12 +736,14 @@
 			check_ajax_referer( 'cbxwpemaillogger',
 				'security' );
 
+			//only logged in user and user who has option change capability can change this.
 			if ( is_user_logged_in() && user_can( get_current_user_id(), 'manage_options' ) ) {
-				$id = isset( $_POST['id'] ) ? intval( $_POST['id'] ) : 0;
+
+				$id = isset( $_POST['id'] ) ? absint( $_POST['id'] ) : 0;
 
 				if ( $id > 0 ) {
-					global $wpdb;
 
+					global $wpdb;
 
 					$item = CBXWPEmailLoggerHelper::SingleLog( $id );
 
@@ -754,15 +760,13 @@
 
 						if ( $report ) {
 							$return = array(
-								'message' => esc_html__( 'Email ReSend and Successfully sent.',
-									'cbxwpemaillogger' ),
+								'message' => esc_html__( 'Email ReSend successfully sent.',	'cbxwpemaillogger'),
 								'success' => 1,
 
 							);
 						} else {
 							$return = array(
-								'message' => esc_html__( 'Email ReSend but failed.',
-									'cbxwpemaillogger' ),
+								'message' => esc_html__( 'Email ReSend but failed.','cbxwpemaillogger'),
 								'success' => 1,
 
 							);
@@ -776,8 +780,7 @@
 			}
 
 			$return = array(
-				'message' => esc_html__( 'Failed to send or not enough access to send',
-					'cbxwpemaillogger' ),
+				'message' => esc_html__( 'Failed to send or not enough access to send',	'cbxwpemaillogger' ),
 				'success' => 0,
 
 			);

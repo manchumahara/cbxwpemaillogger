@@ -68,9 +68,9 @@
 												$formatted_emails = array();
 												foreach ( $emails as $email ) {
 													if ( $email['recipient_name'] != '' ) {
-														$formatted_emails[] = $email['recipient_name'] . '(' . $email['address'] . ')';
+														$formatted_emails[] = $email['recipient_name'] . '(' . sanitize_email($email['address']) . ')';
 													} else {
-														$formatted_emails[] = $email['address'];
+														$formatted_emails[] = sanitize_email($email['address']);
 													}
 												}
 
@@ -85,8 +85,8 @@
 									<td class="row-title"><label for="tablecell"><?php esc_attr_e( 'Subject', 'cbxwpemaillogger' ); ?></label></td>
 									<td>
 										<?php
-											$subject = stripslashes( $item['subject'] );
-											echo $subject;
+											echo esc_attr(wp_unslash( $item['subject'] ));
+
 										?>
 									</td>
 								</tr>
@@ -98,7 +98,7 @@
 											$headers_arr = isset( $email_data['headers_arr'] ) ? $email_data['headers_arr'] : array();
 											$email_from  = isset( $headers_arr['email_from'] ) ? $headers_arr['email_from'] : array();
 
-											echo $email_from['from_name'] . '(' . $email_from['from_email'] . ')';
+											echo $email_from['from_name'] . '(' . sanitize_email($email_from['from_email']) . ')';
 										?>
 									</td>
 								</tr>
@@ -115,9 +115,9 @@
 												$formatted_emails = array();
 												foreach ( $emails as $email ) {
 													if ( $email['recipient_name'] != '' ) {
-														$formatted_emails[] = $email['recipient_name'] . '(' . $email['address'] . ')';
+														$formatted_emails[] = $email['recipient_name'] . '(' . sanitize_email($email['address'] ). ')';
 													} else {
-														$formatted_emails[] = $email['address'];
+														$formatted_emails[] = sanitize_email($email['address']);
 													}
 												}
 
@@ -141,9 +141,9 @@
 												$formatted_emails = array();
 												foreach ( $emails as $email ) {
 													if ( $email['recipient_name'] != '' ) {
-														$formatted_emails[] = $email['recipient_name'] . '(' . $email['address'] . ')';
+														$formatted_emails[] = $email['recipient_name'] . '(' . sanitize_email($email['address']) . ')';
 													} else {
-														$formatted_emails[] = $email['address'];
+														$formatted_emails[] = sanitize_email($email['address']);
 													}
 												}
 
@@ -170,7 +170,7 @@
 													if ( $email['recipient_name'] != '' ) {
 														$formatted_emails[] = $email['recipient_name'] . '(' . $email['address'] . ')';
 													} else {
-														$formatted_emails[] = $email['address'];
+														$formatted_emails[] = sanitize_email($email['address']);
 													}
 												}
 

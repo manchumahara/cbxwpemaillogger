@@ -38,7 +38,7 @@
 							<form id="cbxwpemaillogger_logs" method="post">
 								<?php $cbxwpemaillogger_logs->views(); ?>
 
-								<input type="hidden" name="page" value="<?php echo $_REQUEST['page'] ?>" />
+								<input type="hidden" name="page" value="<?php echo esc_attr(wp_unslash($_REQUEST['page'])); ?>" />
 
 								<?php $cbxwpemaillogger_logs->search_box( esc_html__( 'Search', 'cbxwpemaillogger' ), 'cbxscratingreviewlogsearch' ); ?>
 								<p class="search-box">

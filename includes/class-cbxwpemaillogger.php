@@ -236,4 +236,4 @@
 			return $this->version;
 		}
 
-	}
+	}//end class CBXWPEmailLogger

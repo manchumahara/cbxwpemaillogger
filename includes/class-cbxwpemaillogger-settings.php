@@ -409,7 +409,7 @@
 				$size = isset( $args['size'] ) && ! is_null( $args['size'] ) ? $args['size'] : 'regular selecttwo-select';
 
 				if ( $args['placeholder'] == '' ) {
-					$args['placeholder'] = esc_html__( 'Please Select', 'cbxpetition' );
+					$args['placeholder'] = esc_html__( 'Please Select', 'cbxwpemaillogger' );
 				}
 
 				$html = sprintf( '<input type="hidden" name="%1$s[%2$s][]" value="" />', $args['section'], $args['id'] );
@@ -517,7 +517,7 @@
 				$id    = $args['section'] . '[' . $args['id'] . ']';
 				$label = isset( $args['options']['button_label'] ) ?
 					$args['options']['button_label'] :
-					esc_html__( 'Choose File', 'cbxpetition' );
+					esc_html__( 'Choose File', 'cbxwpemaillogger' );
 
 				$html = sprintf( '<input type="text" class="%1$s-text wpsa-url" id="%2$s[%3$s]" name="%2$s[%3$s]" value="%4$s"/>', $size, $args['section'], $args['id'], $value );
 				$html .= '<input type="button" class="button wpsa-browse" value="' . $label . '" />';
