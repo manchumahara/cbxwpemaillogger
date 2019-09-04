@@ -400,8 +400,11 @@
 
 
 			$subject = isset( $atts['subject'] ) ? wp_unslash(sanitize_text_field($atts['subject'])) : '';
-			$body    = isset( $atts['message'] ) ? wp_unslash(sanitize_textarea_field($atts['message'])) : ( isset( $atts['html'] ) ? wp_unslash(sanitize_textarea_field($atts['html'])) : '' );
+			//$body    = isset( $atts['message'] ) ? wp_unslash(sanitize_textarea_field($atts['message'])) : ( isset( $atts['html'] ) ? wp_unslash(sanitize_textarea_field($atts['html'])) : '' );
+			$body    = isset( $atts['message'] ) ? wp_unslash($atts['message']) : ( isset( $atts['html'] ) ? wp_unslash($atts['html']) : '' );
 			//$htm
+
+			//write_log($body);
 
 			$headers     = isset( $atts['headers'] ) ? $atts['headers'] : array();
 			$attachments = isset( $atts['attachments'] ) ? $atts['attachments'] : array();

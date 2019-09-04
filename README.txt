@@ -27,6 +27,8 @@ This plugin helps to log any email sent from wordpress.
 * Delete custom options created by this plugin and email logs on uninstall(it's not deactivate, uninstall means delete plugin)
 
 
+For support  [please contact](https://codeboxr.com/contact-us/)
+
 == Installation ==
 
 This section describes how to install the plugin and get it working.
@@ -45,7 +47,12 @@ e.g.
 
 == Screenshots ==
 
-Yet to add
+1. Email Log List
+2. Email Setting - General settings
+3. Email Setting - Tools settings
+4. Email Log List Toolbar - View, Delete, Template, ReSend
+5. Email Single Log View with Email Preview
+6. Email Template Preview from Lost list
 
 == Changelog ==
 
