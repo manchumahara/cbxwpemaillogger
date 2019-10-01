@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CBX Email Logger\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-10-01 06:53+0000\n"
+"POT-Creation-Date: 2019-10-01 07:27+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: \n"
@@ -245,7 +245,7 @@ msgstr ""
 #: admin/class-cbxwpemaillogger-admin.php:487
 #: includes/class-cbxwpemaillogger-helper.php:101
 #: includes/class-cbxwpemaillogger-logs.php:77
-#: includes/class-cbxwpemaillogger-logs.php:343
+#: includes/class-cbxwpemaillogger-logs.php:361
 msgid "Delete"
 msgstr ""
 
@@ -276,38 +276,38 @@ msgstr ""
 msgid "Select Media File"
 msgstr ""
 
-#: admin/class-cbxwpemaillogger-admin.php:931
+#: admin/class-cbxwpemaillogger-admin.php:938
 msgid "Email ReSend successfully sent."
 msgstr ""
 
-#: admin/class-cbxwpemaillogger-admin.php:937
+#: admin/class-cbxwpemaillogger-admin.php:944
 msgid "Email ReSend but failed."
 msgstr ""
 
-#: admin/class-cbxwpemaillogger-admin.php:951
+#: admin/class-cbxwpemaillogger-admin.php:958
 msgid "Failed to send or not enough access to send"
 msgstr ""
 
-#: admin/class-cbxwpemaillogger-admin.php:1093
+#: admin/class-cbxwpemaillogger-admin.php:1100
 msgid "Email log successfully."
 msgstr ""
 
-#: admin/class-cbxwpemaillogger-admin.php:1106
+#: admin/class-cbxwpemaillogger-admin.php:1113
 msgid "Failed to delete or not enough access to delete"
 msgstr ""
 
-#: admin/class-cbxwpemaillogger-admin.php:1314
+#: admin/class-cbxwpemaillogger-admin.php:1321
 #, php-format
 msgid ""
-"Thanks for installing/deactivating CBX Email SMTP & Logger V%s - Codeboxr "
-"Team"
+"Thanks for installing/deactivating CBX Email SMTP & Logger V%s - <a "
+"href=\"%s\" target=\"_blank\">Codeboxr Team</a>"
 msgstr ""
 
-#: admin/class-cbxwpemaillogger-admin.php:1323
+#: admin/class-cbxwpemaillogger-admin.php:1330
 #, php-format
 msgid ""
 "Thanks for upgrading CBX Email SMTP & Logger V%s , enjoy the new features "
-"and bug fixes - Codeboxr Team"
+"and bug fixes - <a href=\"%s\" target=\"_blank\">Codeboxr Team</a>"
 msgstr ""
 
 #. %s template
@@ -321,7 +321,7 @@ msgid "Contact Form 7"
 msgstr ""
 
 #: includes/class-cbxwpemaillogger-logs.php:75
-#: includes/class-cbxwpemaillogger-logs.php:341
+#: includes/class-cbxwpemaillogger-logs.php:359
 msgid "View"
 msgstr ""
 
@@ -352,70 +352,78 @@ msgstr ""
 msgid "Failed"
 msgstr ""
 
-#: includes/class-cbxwpemaillogger-logs.php:383
+#: includes/class-cbxwpemaillogger-logs.php:345
+msgid "Untraced"
+msgstr ""
+
+#: includes/class-cbxwpemaillogger-logs.php:401
 #: templates/admin/cbxwpemaillogger-log.php:48
 #: templates/admin/cbxwpemaillogger-logs.php:49
 msgid "Date"
 msgstr ""
 
-#: includes/class-cbxwpemaillogger-logs.php:384
+#: includes/class-cbxwpemaillogger-logs.php:402
 #: templates/admin/cbxwpemaillogger-log.php:64
 msgid "To"
 msgstr ""
 
-#: includes/class-cbxwpemaillogger-logs.php:385
+#: includes/class-cbxwpemaillogger-logs.php:403
 #: templates/admin/cbxwpemaillogger-log.php:90
 msgid "Subject"
 msgstr ""
 
-#: includes/class-cbxwpemaillogger-logs.php:386
+#: includes/class-cbxwpemaillogger-logs.php:404
 msgid "Type"
 msgstr ""
 
-#: includes/class-cbxwpemaillogger-logs.php:387
+#: includes/class-cbxwpemaillogger-logs.php:405
 #: templates/admin/cbxwpemaillogger-log.php:99
 msgid "From"
 msgstr ""
 
-#: includes/class-cbxwpemaillogger-logs.php:388
+#: includes/class-cbxwpemaillogger-logs.php:406
 #: templates/admin/cbxwpemaillogger-log.php:111
 msgid "ReplyTo"
 msgstr ""
 
-#: includes/class-cbxwpemaillogger-logs.php:389
+#: includes/class-cbxwpemaillogger-logs.php:407
 #: templates/admin/cbxwpemaillogger-log.php:137
 msgid "CC"
 msgstr ""
 
-#: includes/class-cbxwpemaillogger-logs.php:390
+#: includes/class-cbxwpemaillogger-logs.php:408
 #: templates/admin/cbxwpemaillogger-log.php:163
 msgid "BCC"
 msgstr ""
 
-#: includes/class-cbxwpemaillogger-logs.php:391
+#: includes/class-cbxwpemaillogger-logs.php:409
 #: templates/admin/cbxwpemaillogger-log.php:233
 msgid "Status"
 msgstr ""
 
-#: includes/class-cbxwpemaillogger-logs.php:392
+#: includes/class-cbxwpemaillogger-logs.php:410
 #: templates/admin/cbxwpemaillogger-log.php:208
 msgid "Attachments"
 msgstr ""
 
-#: includes/class-cbxwpemaillogger-logs.php:393
+#: includes/class-cbxwpemaillogger-logs.php:411
 #: templates/admin/cbxwpemaillogger-log.php:223
 msgid "IP Address"
 msgstr ""
 
-#: includes/class-cbxwpemaillogger-logs.php:672
+#: includes/class-cbxwpemaillogger-logs.php:412
+msgid "Source"
+msgstr ""
+
+#: includes/class-cbxwpemaillogger-logs.php:691
 msgid "No log found. Please change your search criteria for better result."
 msgstr ""
 
-#: includes/class-cbxwpemaillogger-logs.php:698
+#: includes/class-cbxwpemaillogger-logs.php:717
 msgid "Delete All"
 msgstr ""
 
-#: includes/class-cbxwpemaillogger-logs.php:699
+#: includes/class-cbxwpemaillogger-logs.php:718
 msgid "Delete Old Logs"
 msgstr ""
 

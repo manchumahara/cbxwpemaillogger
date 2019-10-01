@@ -584,6 +584,8 @@ class CBXWPEmailLogger_Admin {
 		}
 
 
+
+
 		$attachments_store = array();
 
 		if ( is_array( $attachments ) && sizeof( $attachments ) > 0 ) {
@@ -625,9 +627,11 @@ class CBXWPEmailLogger_Admin {
 				$name    = trim( $name );
 				$content = trim( $content );
 
+
 				switch ( strtolower( $name ) ) {
-					case 'X-WPCF7-Content-Type':
+					case 'x-wpcf7-content-type':
 						$email_source = 'contact-form-7';
+
 						break;
 					// Mainly for legacy -- process a From: header if it's there
 					case 'from':
@@ -770,6 +774,8 @@ class CBXWPEmailLogger_Admin {
 		$email_data['headers_arr'] = $headers_arr;
 
 
+
+
 		$data = array(
 			'date_created' => current_time( 'mysql' ),
 			'subject'      => sanitize_text_field( $subject ),
@@ -780,12 +786,13 @@ class CBXWPEmailLogger_Admin {
 
 		$data = apply_filters( 'cbxwpemaillogger_log_entry_data', $data );
 
+
+
 		$data_format = array(
 			'%s', // date_created
 			'%s', // subject
-			'%s', // attachment
 			'%s', // email_data
-			'%s', // email_data,
+			'%s', // ip_address
 			'%s' // src_tracked
 		);
 

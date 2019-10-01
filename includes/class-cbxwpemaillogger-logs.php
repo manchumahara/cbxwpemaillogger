@@ -327,6 +327,24 @@
 			return esc_attr( $ip_address );
 		}//end method column_ip_address
 
+
+		/**
+		 * Display col 'src_tracked' value
+		 *
+		 * @param $item
+		 *
+		 * @return string|void
+		 */
+		function column_src_tracked( $item ) {
+			$src_tracked = isset( $item['src_tracked'] ) ? esc_attr(wp_unslash($item['src_tracked'])) : '';
+
+			$sources = CBXWPEmailLoggerHelper::email_known_src();
+
+
+
+			return isset($sources[$src_tracked])? esc_attr($sources[$src_tracked]): esc_html__('Untraced', 'cbxwpemaillogger');
+		}//end method column_ip_address
+
 		/**
 		 * Callback for column 'actions'
 		 *
@@ -391,6 +409,7 @@
 				'status'         => esc_html__( 'Status', 'cbxwpemaillogger' ),
 				'attachment'     => esc_html__( 'Attachments', 'cbxwpemaillogger' ),
 				'ip_address'     => esc_html__( 'IP Address', 'cbxwpemaillogger' ),
+				'src_tracked'     => esc_html__( 'Source', 'cbxwpemaillogger' ),
 				//'actions'       => esc_html__( 'Actions', 'cbxwpemaillogger' )
 			);
 

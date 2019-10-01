@@ -73,6 +73,7 @@ e.g.
 * [New] Custom SMTP
 * [New] Email attachment store/save
 * [Fix] Email resend now maintain same email content type
+* [New] Track Email source of very popular common plugin, Now supports only Contact form 7
 
 = 1.0.2 =
 
