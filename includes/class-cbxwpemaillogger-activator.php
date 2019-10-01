@@ -44,13 +44,15 @@
 
 			$settings = new CBXWPEmailLoggerSettings();
 
-			$delete_old_log = $settings->get_option( 'delete_old_log', 'cbxwpemaillogger_general', 'no' );
+			$delete_old_log = $settings->get_option( 'delete_old_log', 'cbxwpemaillogger_log', 'no' );
 
 			if ( $delete_old_log == 'yes' ) {
 				if ( ! wp_next_scheduled( 'cbxwpemaillogger_daily_event' ) ) {
 					wp_schedule_event( time(), 'daily', 'cbxwpemaillogger_daily_event' );
 				}
 			}
+
+			set_transient( 'cbxwpemaillogger_activated_notice', 1 );
 
 
 		}//end method activate
@@ -59,27 +61,7 @@
 		 * Create  necessary tables needed for 'cbxscratingreview'
 		 */
 		public static function createTables() {
-			global $wpdb;
-
-			$charset_collate = $wpdb->get_charset_collate();
-
-			//tables
-			$table_cbxwpemaillogger = $wpdb->prefix . 'cbxwpemaillogger_log';
-
-			require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
-
-			//create rating log table
-			$table_rating_log_sql = "CREATE TABLE $table_cbxwpemaillogger (
-                          id bigint(20) unsigned NOT NULL AUTO_INCREMENT,                             
-                          date_created datetime NOT NULL COMMENT 'created date',                                                                              
-                          subject varchar(255) NOT NULL DEFAULT '' COMMENT 'email subject',
-                          email_data longtext NOT NULL DEFAULT '' COMMENT 'email body and header',
-                          ip_address varchar(45) NOT NULL,                                                       
-                          status tinyint(3) NOT NULL DEFAULT 1 COMMENT '1 means sent, 0 means failed',                                                                            
-                          PRIMARY KEY (id)
-                        ) $charset_collate; ";
-
-			dbDelta( $table_rating_log_sql );
+			CBXWPEmailLoggerHelper::createTables();
 		}//end method createTables
 
 	}//end method CBXWPEmailLogger_Activator

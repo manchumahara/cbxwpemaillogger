@@ -27,6 +27,10 @@
 	<h1 class="wp-heading-inline">
 		<?php esc_html_e( 'CBX Email Log Manager', 'cbxwpemaillogger' ); ?>
 	</h1>
+	<p>
+		<a class="button button-primary  cbxwpemaillogger_logs_btn" href="<?php echo esc_url(admin_url( 'admin.php?page=cbxwpemailloggersettings#cbxwpemaillogger_log' )); ?>"><?php esc_html_e( 'Log Setting', 'cbxwpemaillogger' ); ?></a>
+		<a class="button  cbxwpemaillogger_logs_btn" href="<?php echo esc_url(admin_url( 'admin.php?page=cbxwpemailloggersettings#cbxwpemaillogger_email' )); ?>"><?php esc_html_e( 'SMTP Setting', 'cbxwpemaillogger' ); ?></a>
+	</p>
 
 	<div id="poststuff">
 		<div id="post-body" class="metabox-holder">

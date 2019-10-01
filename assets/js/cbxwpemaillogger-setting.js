@@ -12,6 +12,7 @@
             allowClear: false
 		});
 
+
 		// Switches option sections
 		$('.cbxwpemaillogger_group').hide();
 		var activetab = '';
@@ -19,11 +20,25 @@
 			//get
 			activetab = localStorage.getItem("cbxwpemailloggeractivetab");
 		}
-		if (activetab != '' && $(activetab).length) {
+
+		//if url has section id as hash then set it as active or override the current local storage value
+		if (window.location.hash) {
+			if ($(window.location.hash).hasClass('cbxwpemaillogger_group')) {
+				activetab = window.location.hash;
+				if (typeof(localStorage) != 'undefined') {
+					localStorage.setItem("cbxwpemailloggeractivetab", activetab);
+				}
+			}
+
+		}
+
+
+		if (activetab != '' && $(activetab).length && $(activetab).hasClass('cbxwpemaillogger_group')) {
 			$(activetab).fadeIn();
 		} else {
 			$('.cbxwpemaillogger_group:first').fadeIn();
 		}
+
 		$('.cbxwpemaillogger_group .collapsed').each(function () {
 			$(this).find('input:checked').parent().parent().parent().nextAll().each(
 				function () {
@@ -54,6 +69,8 @@
 			$(clicked_group).fadeIn();
 			evt.preventDefault();
 		});
+		
+
 
 		$('.wpsa-browse').on('click', function (event) {
 			event.preventDefault();
@@ -121,6 +138,11 @@
             }
 
         });
+
+        //apply show/hide password feature to smtp password field
+
+		$('.cbx-hideshowpassword').hidePassword(true);
+		//$('input:password').hidePassword(true);
 
 	});
 

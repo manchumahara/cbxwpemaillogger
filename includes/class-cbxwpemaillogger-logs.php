@@ -242,12 +242,58 @@
 		 */
 		function column_attachment( $item ) {
 
+		    $id = intval( $item['id']);
 			$email_data = maybe_unserialize( $item['email_data'] );
 
 			$attachments = isset( $email_data['attachments'] ) ? $email_data['attachments'] : array();
 
+
+
 			if ( is_array( $attachments ) && sizeof( $attachments ) > 0 ) {
-				return implode( '<br/>', $attachments );
+
+				$setting          = new CBXWPEmailLoggerSettings();;
+				$enable_store_attachment = intval( $setting->get_option( 'enable_store_attachment', 'cbxwpemaillogger_log', 0 ) );
+				if($enable_store_attachment){
+					global $wp_filesystem;
+					require_once( ABSPATH . '/wp-admin/includes/file.php' );
+					WP_Filesystem();
+
+					$dir_info = CBXWPEmailLoggerHelper::checkUploadDir();
+
+					$log_folder_dir       = $dir_info['cbxwpemaillogger_base_dir'] . $id;
+
+					if ($wp_filesystem->exists( $log_folder_dir ) ) {
+
+					    $files =  array();
+
+						foreach ($attachments as $attachment){
+
+
+							if ($wp_filesystem->exists( $log_folder_dir.'/'.$attachment ) ) {
+
+							    $attachment_download_url = admin_url('admin-ajax.php?file='.$attachment.'&action=cbxwpemaillogger_download_attachment&log_id='.$id);
+								$attachment_download_url = wp_nonce_url( $attachment_download_url, 'cbxwpemaillogger', 'cbxwpemaillogger_nonce' );
+
+							    $attachment_url  = '<a href="'.esc_url($attachment_download_url).'">'.$attachment.'</a>';
+
+							    $files[] = $attachment_url;
+                            }
+                            else{
+                                $files[] = $attachment;
+                            }
+
+						}
+
+						return implode( '<br/>', $files );
+                    }
+                    else{
+	                    return implode( '<br/>', $attachments );
+                    }
+
+                }
+                else{
+	                return implode( '<br/>', $attachments );
+                }
 			}
 
 			return esc_html__( 'N/A', 'cbxwpemaillogger' );
@@ -317,6 +363,8 @@
 					return $item[ $column_name ];
 				case 'subject':
 					return $item[ $column_name ];
+				case 'email_type':
+					return $item[ $column_name ];
 				case 'status':
 					return $item[ $column_name ];
 				case 'attachment':
@@ -335,6 +383,7 @@
 				'date_created'   => esc_html__( 'Date', 'cbxwpemaillogger' ),
 				'email_to'       => esc_html__( 'To', 'cbxwpemaillogger' ),
 				'subject'        => esc_html__( 'Subject', 'cbxwpemaillogger' ),
+				'email_type'     => esc_html__( 'Type', 'cbxwpemaillogger' ),
 				'email_from'     => esc_html__( 'From', 'cbxwpemaillogger' ),
 				'email_reply_to' => esc_html__( 'ReplyTo', 'cbxwpemaillogger' ),
 				'email_cc'       => esc_html__( 'CC', 'cbxwpemaillogger' ),
@@ -356,6 +405,7 @@
 				//'email_from'    => array( 'logs.email_from', false ),
 				//'email_to'      => array( 'logs.email_to', false ),
 				'subject'      => array( 'logs.subject', false ),
+				'email_type'      => array( 'logs.email_type', false ),
 				'status'       => array( 'logs.status', false ),
 				'ip_address'   => array( 'logs.ip_address', false ),
 			);
@@ -399,11 +449,11 @@
 
 				$settings = new CBXWPEmailLoggerSettings();
 
-				$delete_old_log = $settings->get_option( 'delete_old_log', 'cbxwpemaillogger_general', 'no' );
+				$delete_old_log = $settings->get_option( 'delete_old_log', 'cbxwpemaillogger_log', 'no' );
 
 				if ( $delete_old_log == 'yes' ) {
 
-					$log_old_days = intval( $settings->get_option( 'log_old_days', 'cbxwpemaillogger_general', '30' ) );
+					$log_old_days = intval( $settings->get_option( 'log_old_days', 'cbxwpemaillogger_log', '30' ) );
 
 					if ( $log_old_days > 0 ) {
 
@@ -430,7 +480,7 @@
 						$delete_status = $wpdb->query( $wpdb->prepare( "DELETE FROM $table_cbxwpemaillogger WHERE id=%d", $id ) );
 
 						if ( $delete_status !== false ) {
-							do_action( 'cbxwpemaillogger_log_delete_after' );
+							do_action( 'cbxwpemaillogger_log_delete_after', $id );
 						}
 					}
 				}

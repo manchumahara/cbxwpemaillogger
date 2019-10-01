@@ -219,7 +219,24 @@
 				$size  = isset( $args['size'] ) && ! is_null( $args['size'] ) ? $args['size'] : 'regular';
 				$type  = isset( $args['type'] ) ? $args['type'] : 'text';
 
-				$html = sprintf( '<input type="%1$s" class="%2$s-text" id="%3$s[%4$s]" name="%3$s[%4$s]" value="%5$s"/>', $type, $size, $args['section'], $args['id'], $value );
+				$html = sprintf( '<input autocomplete="none" onfocus="this.removeAttribute(\'readonly\');" readonly type="%1$s" class="%2$s-text" id="%3$s[%4$s]" name="%3$s[%4$s]" value="%5$s"/>', $type, $size, $args['section'], $args['id'], $value );
+				$html .= $this->get_field_description( $args );
+
+				echo $html;
+			}
+
+			/**
+			 * Displays a text field for a settings field
+			 *
+			 * @param array $args settings field args
+			 */
+			function callback_password( $args ) {
+
+				$value = esc_attr( $this->get_option( $args['id'], $args['section'], $args['default'] ) );
+				$size  = isset( $args['size'] ) && ! is_null( $args['size'] ) ? $args['size'] : 'regular';
+				$type  = isset( $args['type'] ) ? $args['type'] : 'password';
+
+				$html = sprintf( '<input onfocus="this.removeAttribute(\'readonly\');" readonly autocomplete="none" type="%1$s" class="cbx-hideshowpassword %2$s-text" id="%3$s[%4$s]" name="%3$s[%4$s]" value="%5$s"/>', $type, $size, $args['section'], $args['id'], $value );
 				$html .= $this->get_field_description( $args );
 
 				echo $html;
@@ -315,48 +332,6 @@
 				echo $html;
 			}
 
-
-			/**
-			 * Displays a multicheckbox a settings field
-			 *
-			 * @param array $args settings field args
-			 */
-			function callback_radio( $args ) {
-
-				$value = $this->get_option( $args['id'], $args['section'], $args['default'] );
-
-				$html = '<fieldset>';
-				foreach ( $args['options'] as $key => $label ) {
-					$html .= sprintf( '<label for="wpuf-%1$s[%2$s][%3$s]">', $args['section'], $args['id'], $key );
-					$html .= sprintf( '<input type="radio" class="radio" id="wpuf-%1$s[%2$s][%3$s]" name="%1$s[%2$s]" value="%3$s" %4$s />', $args['section'], $args['id'], $key, checked( $value, $key, false ) );
-					$html .= sprintf( '%1$s</label><br>', $label );
-				}
-				$html .= $this->get_field_description( $args );
-				$html .= '</fieldset>';
-
-				echo $html;
-			}
-
-			/**
-			 * Displays a selectbox for a settings field
-			 *
-			 * @param array $args settings field args
-			 */
-			function callback_select( $args ) {
-
-				$value = esc_attr( $this->get_option( $args['id'], $args['section'], $args['default'] ) );
-				$size  = isset( $args['size'] ) && ! is_null( $args['size'] ) ? $args['size'] : 'regular selecttwo-select';
-
-				$html = sprintf( '<select class="%1$s" name="%2$s[%3$s]" id="%2$s[%3$s]">', $size, $args['section'], $args['id'] );
-				foreach ( $args['options'] as $key => $label ) {
-					$html .= sprintf( '<option value="%s"%s>%s</option>', $key, selected( $value, $key, false ), $label );
-				}
-				$html .= sprintf( '</select>' );
-				$html .= $this->get_field_description( $args );
-
-				echo $html;
-			}
-
 			/**
 			 * Displays a multicheckbox settings field
 			 *
@@ -391,6 +366,50 @@
 
 				echo $html;
 			}
+
+
+			/**
+			 * Displays a multicheckbox a settings field
+			 *
+			 * @param array $args settings field args
+			 */
+			function callback_radio( $args ) {
+
+				$value = $this->get_option( $args['id'], $args['section'], $args['default'] );
+
+				$html = '<fieldset class="radio_fields">';
+				foreach ( $args['options'] as $key => $label ) {
+					$html .= sprintf( '<label for="wpuf-%1$s[%2$s][%3$s]">', $args['section'], $args['id'], $key );
+					$html .= sprintf( '<input type="radio" class="radio" id="wpuf-%1$s[%2$s][%3$s]" name="%1$s[%2$s]" value="%3$s" %4$s />', $args['section'], $args['id'], $key, checked( $value, $key, false ) );
+					$html .= sprintf( '%1$s</label>', $label );
+				}
+				$html .= $this->get_field_description( $args );
+				$html .= '</fieldset>';
+
+				echo $html;
+			}
+
+			/**
+			 * Displays a selectbox for a settings field
+			 *
+			 * @param array $args settings field args
+			 */
+			function callback_select( $args ) {
+
+				$value = esc_attr( $this->get_option( $args['id'], $args['section'], $args['default'] ) );
+				$size  = isset( $args['size'] ) && ! is_null( $args['size'] ) ? $args['size'] : 'regular selecttwo-select';
+
+				$html = sprintf( '<select class="%1$s" name="%2$s[%3$s]" id="%2$s[%3$s]">', $size, $args['section'], $args['id'] );
+				foreach ( $args['options'] as $key => $label ) {
+					$html .= sprintf( '<option value="%s"%s>%s</option>', $key, selected( $value, $key, false ), $label );
+				}
+				$html .= sprintf( '</select>' );
+				$html .= $this->get_field_description( $args );
+
+				echo $html;
+			}
+
+
 
 			/**
 			 * Displays a multi-selectbox for a settings field
@@ -526,21 +545,6 @@
 				echo $html;
 			}
 
-			/**
-			 * Displays a password field for a settings field
-			 *
-			 * @param array $args settings field args
-			 */
-			function callback_password( $args ) {
-
-				$value = esc_attr( $this->get_option( $args['id'], $args['section'], $args['default'] ) );
-				$size  = isset( $args['size'] ) && ! is_null( $args['size'] ) ? $args['size'] : 'regular';
-
-				$html = sprintf( '<input type="password" class="%1$s-text" id="%2$s[%3$s]" name="%2$s[%3$s]" value="%4$s"/>', $size, $args['section'], $args['id'], $value );
-				$html .= $this->get_field_description( $args );
-
-				echo $html;
-			}
 
 			/**
 			 * Displays a color picker field for a settings field

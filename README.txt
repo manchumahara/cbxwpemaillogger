@@ -1,20 +1,23 @@
-=== CBX Email Logger ===
+=== CBX Email SMTP & Logger ===
 Contributors: codeboxr, manchumahara
-Tags: email, log, email log, debug, email debug, email log
-Requires at least: 3.0.1
-Tested up to: 5.2.2
+Tags: wordpress smtp, wordpress email log, smtp
+Requires at least: 3.9
+Tested up to: 5.2.3
 Stable tag: 1.0.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-This plugin helps to log email and displays in admin panel and more.
+This plugin helps to send email using SMTP and other methods as well as logs email and displays in admin panel and more.
 
 == Description ==
 
 This plugin helps to log any email sent from wordpress.
 
-**Main Features:**
+For support  [please contact](https://codeboxr.com/contact-us/)
 
+**Email Log Features:**
+
+* Default enabled on plugin activation
 * Logs every email sent
 * Logs email send success or fail(Bullet proof way to detect email send or not)
 * Delete all email logs or single
@@ -25,9 +28,17 @@ This plugin helps to log any email sent from wordpress.
 * Auto delete X Days old logs using wordpress native event schedule
 * Custom Setting panel
 * Delete custom options created by this plugin and email logs on uninstall(it's not deactivate, uninstall means delete plugin)
+* Save email attachments if enabled, default disabled
 
+**Email SMTP Features:**
 
-For support  [please contact](https://codeboxr.com/contact-us/)
+* Default disabled on plugin activation
+* Enable/disable override from Name
+* Enable/disable override from Email
+* Override wordpress default email to send via SMTP
+* Full SMTP feature implementations
+
+For documentation and pro features [please visit](https://codeboxr.com/product/cbx-email-logger-for-wordpress/)
 
 == Installation ==
 
@@ -48,13 +59,20 @@ e.g.
 == Screenshots ==
 
 1. Email Log List
-2. Email Setting - General settings
-3. Email Setting - Tools settings
+2. Setting - General settings
+3. Setting - Tools settings
 4. Email Log List Toolbar - View, Delete, Template, ReSend
 5. Email Single Log View with Email Preview
 6. Email Template Preview from Lost list
+7. Setting - SMTP configuration
 
 == Changelog ==
+
+= 1.0.3 =
+
+* [New] Custom SMTP
+* [New] Email attachment store/save
+* [Fix] Email resend now maintain same email content type
 
 = 1.0.2 =
 

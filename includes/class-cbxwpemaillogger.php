@@ -163,6 +163,8 @@
 
 			$plugin_admin = new CBXWPEmailLogger_Admin( $this->get_plugin_name(), $this->get_version() );
 
+			$this->loader->add_filter( 'plugin_action_links_' . CBXWPEMAILLOGGER_BASE_NAME, $plugin_admin, 'plugin_action_links' );
+
 			//create admin menu page
 			$this->loader->add_action( 'admin_init', $plugin_admin, 'admin_init' );
 			$this->loader->add_action( 'admin_menu', $plugin_admin, 'admin_pages' );
@@ -176,8 +178,22 @@
 			$this->loader->add_action( 'wp_ajax_cbxwpemaillogger_log_delete', $plugin_admin, 'email_log_delete' ); //email_log_delete
 			$this->loader->add_action( 'wp_ajax_cbxwpemaillogger_log_resend', $plugin_admin, 'email_resend' ); //resend email
 
+			$this->loader->add_action( 'wp_ajax_cbxwpemaillogger_download_attachment', $plugin_admin, 'download_attachment' ); //download attachment
+
+			$this->loader->add_action('cbxwpemaillogger_log_delete_after', $plugin_admin, 'delete_attachments_after_log_delete');
+			$this->loader->add_action('cbxwpemaillogger_log_all_delete_after', $plugin_admin, 'delete_attachments_folder');
+
 			//cron event
 			$this->loader->add_action( 'cbxwpemaillogger_daily_event', $plugin_admin, 'delete_old_log' ); //delete x days old logs every day
+
+			//added from v1.0.3
+			$this->loader->add_filter( 'wp_mail_from', $plugin_admin, 'wp_mail_from_custom', 99999 );
+			$this->loader->add_filter( 'wp_mail_from_name', $plugin_admin, 'wp_mail_from_name_custom', 99999 );
+			$this->loader->add_filter( 'phpmailer_init', $plugin_admin, 'phpmailer_init_extend', 99999 );
+
+			//for upgrade process
+			$this->loader->add_action( 'upgrader_process_complete', $plugin_admin,'plugin_upgrader_process_complete',10, 2);
+			$this->loader->add_action( 'admin_notices', $plugin_admin,'plugin_activate_upgrade_notices');
 
 		}//end method define_admin_hooks
 

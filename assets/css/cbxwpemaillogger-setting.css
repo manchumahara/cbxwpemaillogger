@@ -7,9 +7,11 @@
 	padding-top: 5px;
 }
 
+/*
 .chosen-container-single, .chosen-container-multi {
 	min-width: 244px !important;
 }
+*/
 
 #poststuff h2.nav-tab-wrapper .nav-tab-active{
 	margin-bottom: -2px !important;
@@ -121,3 +123,14 @@ h3.setting_heading, h4.setting_subheading {
 	vertical-align: middle;
 }
 
+
+.form-table td fieldset.radio_fields{
+}
+
+.form-table td fieldset.radio_fields label{
+	display: inline-block !important;
+	margin-right: 10px !important;
+}
+.form-table td fieldset.radio_fields label:last-child{
+	margin-right: 0px !important;
+}
