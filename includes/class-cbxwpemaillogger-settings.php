@@ -40,9 +40,11 @@
 
 
 			/**
-			 * Set settings sections
+             * Set settings sections
+             *
+			 * @param $sections
 			 *
-			 * @param array $sections setting sections array
+			 * @return $this
 			 */
 			function set_sections( $sections ) {
 				$this->settings_sections = $sections;
@@ -51,9 +53,11 @@
 			}
 
 			/**
-			 * Add a single section
+             * Add a single section
+             *
+			 * @param $section
 			 *
-			 * @param array $section
+			 * @return $this
 			 */
 			function add_section( $section ) {
 				$this->settings_sections[] = $section;
@@ -62,9 +66,11 @@
 			}
 
 			/**
-			 * Set settings fields
+             * Set settings fields
+             *
+			 * @param $fields
 			 *
-			 * @param array $fields settings fields array
+			 * @return $this
 			 */
 			function set_fields( $fields ) {
 				$this->settings_fields = $fields;
@@ -123,10 +129,14 @@
 						$label    = isset( $option['label'] ) ? $option['label'] : '';
 						$callback = isset( $option['callback'] ) ? $option['callback'] : array( $this, 'callback_' . $type );
 
+						$label_for = $this->clean_label_for("{$section}_{$option['name']}");
+
 						$args = array(
 							'id'                => $option['name'],
 							'class'             => isset( $option['class'] ) ? $option['class'] : $name,
-							'label_for'         => $args['label_for'] = "{$section}[{$option['name']}]",
+							//'label_for'         => $args['label_for'] = "{$section}[{$option['name']}]",
+							//'label_for'         => $args['label_for'] = "{$section}_{$option['name']}",
+							'label_for'         => $args['label_for'] = $label_for,
 							'desc'              => isset( $option['desc'] ) ? $option['desc'] : '',
 							'name'              => $label,
 							'section'           => $section,
@@ -139,7 +149,9 @@
 							'sanitize_callback' => isset( $option['sanitize_callback'] ) ? $option['sanitize_callback'] : '',
 							'placeholder'       => isset( $option['placeholder'] ) ? $option['placeholder'] : '',
 							'type'              => $type,
-							'optgroup'          => isset( $option['optgroup'] ) ? intval( $option['optgroup'] ) : 0
+							'optgroup'          => isset( $option['optgroup'] ) ? intval( $option['optgroup'] ) : 0,
+							'fields'            => isset( $option['fields'] ) ? $option['fields'] : array(),
+							'sortable'          => isset( $option['sortable'] ) ? intval( $option['sortable'] ) : 0,
 						);
 
 						//add_settings_field($section . '[' . $option['name'] . ']', $option['label'], array($this, 'callback_' . $type), $section, $section, $args);
@@ -152,6 +164,22 @@
 					register_setting( $section['id'], $section['id'], array( $this, 'sanitize_options' ) );
 				}
 			}//end method admin_init
+
+			/**
+             * Clean label_for or id tad
+             *
+			 * @param $str
+			 *
+			 * @return mixed
+			 */
+            function clean_label_for($str){
+
+			    $str = str_replace('][', '_', $str);
+			    $str = str_replace(']', '_', $str);
+			    $str = str_replace('[', '_', $str);
+
+			    return $str;
+            }
 
 			/**
 			 * Prepares default values by section
@@ -208,35 +236,24 @@
 				return $desc;
 			}//end method get_field_description
 
-			/**
-			 * Displays a text field for a settings field
-			 *
-			 * @param array $args settings field args
-			 */
-			function callback_text( $args ) {
-
-				$value = esc_attr( $this->get_option( $args['id'], $args['section'], $args['default'] ) );
-				$size  = isset( $args['size'] ) && ! is_null( $args['size'] ) ? $args['size'] : 'regular';
-				$type  = isset( $args['type'] ) ? $args['type'] : 'text';
-
-				$html = sprintf( '<input autocomplete="none" onfocus="this.removeAttribute(\'readonly\');" readonly type="%1$s" class="%2$s-text" id="%3$s[%4$s]" name="%3$s[%4$s]" value="%5$s"/>', $type, $size, $args['section'], $args['id'], $value );
-				$html .= $this->get_field_description( $args );
-
-				echo $html;
-			}
 
 			/**
 			 * Displays a text field for a settings field
 			 *
 			 * @param array $args settings field args
 			 */
-			function callback_password( $args ) {
+			function callback_password( $args, $value = null ) {
 
-				$value = esc_attr( $this->get_option( $args['id'], $args['section'], $args['default'] ) );
-				$size  = isset( $args['size'] ) && ! is_null( $args['size'] ) ? $args['size'] : 'regular';
-				$type  = isset( $args['type'] ) ? $args['type'] : 'password';
+				if ( $value === null ) {
+					$value = esc_attr( $this->get_option( $args['id'], $args['section'], $args['default'] ) );
+				}
+				$size = isset( $args['size'] ) && ! is_null( $args['size'] ) ? $args['size'] : 'regular';
+				$type = isset( $args['type'] ) ? $args['type'] : 'password';
 
-				$html = sprintf( '<input onfocus="this.removeAttribute(\'readonly\');" readonly autocomplete="none" type="%1$s" class="cbx-hideshowpassword %2$s-text" id="%3$s[%4$s]" name="%3$s[%4$s]" value="%5$s"/>', $type, $size, $args['section'], $args['id'], $value );
+				$html_id = "{$args['section']}_{$args['id']}";
+				$html_id = $this->clean_label_for($html_id);
+
+				$html = sprintf( '<input onfocus="this.removeAttribute(\'readonly\');" readonly autocomplete="none" type="%1$s" class="cbx-hideshowpassword %2$s-text" id="%6$s" name="%3$s[%4$s]" value="%5$s"/>', $type, $size, $args['section'], $args['id'], $value, $html_id );
 				$html .= $this->get_field_description( $args );
 
 				echo $html;
@@ -286,8 +303,8 @@
 			 *
 			 * @param array $args settings field args
 			 */
-			function callback_url( $args ) {
-				$this->callback_text( $args );
+			function callback_url( $args, $value = null ) {
+				$this->callback_text( $args, $value );
 			}
 
 			/**
@@ -295,15 +312,21 @@
 			 *
 			 * @param array $args settings field args
 			 */
-			function callback_number( $args ) {
-				$value       = esc_attr( $this->get_option( $args['id'], $args['section'], $args['default'] ) );
+			function callback_number( $args, $value = null ) {
+				if ( $value === null ) {
+					$value = esc_attr( $this->get_option( $args['id'], $args['section'], $args['default'] ) );
+				}
 				$size        = isset( $args['size'] ) && ! is_null( $args['size'] ) ? $args['size'] : 'regular';
 				$type        = isset( $args['type'] ) ? $args['type'] : 'number';
 				$placeholder = empty( $args['placeholder'] ) ? '' : ' placeholder="' . $args['placeholder'] . '"';
 				$min         = empty( $args['min'] ) ? '' : ' min="' . $args['min'] . '"';
 				$max         = empty( $args['max'] ) ? '' : ' max="' . $args['max'] . '"';
 				$step        = empty( $args['max'] ) ? '' : ' step="' . $args['step'] . '"';
-				$html        = sprintf( '<input type="%1$s" class="%2$s-number" id="%3$s[%4$s]" name="%3$s[%4$s]" value="%5$s"%6$s%7$s%8$s%9$s/>', $type, $size, $args['section'], $args['id'], $value, $placeholder, $min, $max, $step );
+
+				$html_id = "{$args['section']}_{$args['id']}";
+				$html_id = $this->clean_label_for($html_id);
+
+				$html        = sprintf( '<input type="%1$s" class="%2$s-number" id="%10$s" name="%3$s[%4$s]" value="%5$s"%6$s%7$s%8$s%9$s/>', $type, $size, $args['section'], $args['id'], $value, $placeholder, $min, $max, $step, $html_id );
 				$html        .= $this->get_field_description( $args );
 				echo $html;
 			}
@@ -313,17 +336,27 @@
 			 *
 			 * @param array $args settings field args
 			 */
-			function callback_checkbox( $args ) {
+			function callback_checkbox( $args, $value = null ) {
 
-				$value = esc_attr( $this->get_option( $args['id'], $args['section'], $args['default'] ) );
+				if ( $value === null ) {
+					$value = esc_attr( $this->get_option( $args['id'], $args['section'], $args['default'] ) );
+				}
+
+				$html_id = "{$args['section']}_{$args['id']}";
+				$html_id = $this->clean_label_for($html_id);
 
 				$html = '<fieldset>';
-				$html .= sprintf( '<label for="wpuf-%1$s[%2$s]">', $args['section'], $args['id'] );
+				//$html .= sprintf( '<label for="wpuf-%1$s[%2$s]">', $args['section'], $args['id'] );
+				$html .= sprintf( '<label for="wpuf-%1$s">', $html_id );
 				$html .= sprintf( '<input type="hidden" name="%1$s[%2$s]" value="off" />', $args['section'], $args['id'] );
+
+				//$html_id = "{$args['section']}_{$args['id']}";
+				//$html_id = $this->clean_label_for($html_id);
 
 				$active_class = ( $value == 'on' ) ? 'active' : '';
 				$html         .= '<span class="checkbox-toggle-btn ' . esc_attr( $active_class ) . '">';
-				$html         .= sprintf( '<input type="checkbox" class="checkbox" id="wpuf-%1$s[%2$s]" name="%1$s[%2$s]" value="on" %3$s />', $args['section'], $args['id'], checked( $value, 'on', false ) );
+				//$html         .= sprintf( '<input type="checkbox" class="checkbox" id="wpuf-%1$s_%2$s" name="%1$s[%2$s]" value="on" %3$s />', $args['section'], $args['id'], checked( $value, 'on', false ) );
+				$html         .= sprintf( '<input type="checkbox" class="checkbox" id="wpuf-%4$s" name="%1$s[%2$s]" value="on" %3$s />', $args['section'], $args['id'], checked( $value, 'on', false ), $html_id );
 				$html         .= '<i class="checkbox-round-btn"></i></span>';
 
 				$html .= sprintf( '<i class="checkbox-round-btn-text">%1$s</i></label>', $args['desc'] );
@@ -337,26 +370,51 @@
 			 *
 			 * @param array $args settings field args
 			 */
-			function callback_multicheck( $args ) {
+			function callback_multicheck( $args, $value = null ) {
 
-				$value = $this->get_option( $args['id'], $args['section'], $args['default'] );
+				$sortable = isset( $args['sortable'] ) ? intval( $args['sortable'] ) : 0;
+
+
+				if ( $value === null ) {
+					$value = $this->get_option( $args['id'], $args['section'], $args['default'] );
+				}
+
 				if ( ! is_array( $value ) ) {
 					$value = array();
 				}
 
-				$html = '<fieldset class="multicheck_fields">';
-				foreach ( $args['options'] as $key => $label ) {
+				$sortable_class = ( $sortable ) ? 'multicheck_fields_sortable' : '';
 
-					//$checked = isset($value[$key]) ? $value[$key] : '0';
+				$html = '<fieldset class="multicheck_fields ' . esc_attr( $sortable_class ) . '">';
+
+				$options             = $args['options'];
+				$options_keys        = array_keys( $options );
+				$options_keys_diff   = array_diff( $options_keys, $value );
+				$options_keys_sorted = array_merge( $value, $options_keys_diff );
+
+				foreach ( $options_keys_sorted as $key ) {
+					$label = isset( $options[ $key ] ) ? esc_attr( $options[ $key ] ) : esc_attr( $key );
+
 					$checked      = in_array( $key, $value ) ? ' checked="checked" ' : '';
 					$active_class = in_array( $key, $value ) ? 'active' : '';
 
-					$html .= sprintf( '<p class="multicheck_field"><label for="wpuf-%1$s[%2$s][%3$s]">', $args['section'], $args['id'], $key );
-					$html .= sprintf( '<input type="hidden" name="%1$s[%2$s][]" value="" />', $args['section'], $args['id'] );
+					$html_id = "{$args['section']}_{$args['id']}_{$key}";
+					$html_id = $this->clean_label_for($html_id);
+
+					$html .= '<p class="multicheck_field">';
+					if ( $sortable ) {
+						$html .= '<span class="multicheck_field_handle"></span>';
+					}
+
+					//$html .= sprintf( '<label for="wpuf-%1$s[%2$s][%3$s]">', $args['section'], $args['id'], $key );
+					$html .= sprintf( '<label for="wpuf-%1$s">', $html_id );
+
+
+					$html .= sprintf( '<input type="hidden" name="%1$s[%2$s][%3$s]" value="" />', $args['section'], $args['id'], $key );
 
 
 					$html .= '<span class="checkbox-toggle-btn ' . esc_attr( $active_class ) . '">';
-					$html .= sprintf( '<input type="checkbox" class="checkbox" id="wpuf-%1$s[%2$s][%3$s]" name="%1$s[%2$s][%3$s]" value="%3$s" %4$s />', $args['section'], $args['id'], $key, $checked );
+					$html .= sprintf( '<input type="checkbox" class="checkbox" id="wpuf-%5$s" name="%1$s[%2$s][%3$s]" value="%3$s" %4$s />', $args['section'], $args['id'], $key, $checked, $html_id );
 					$html .= '<i class="checkbox-round-btn"></i></span>';
 
 					$html .= sprintf( '<i class="checkbox-round-btn-text">%1$s</i></label></p>', $label );
@@ -365,6 +423,34 @@
 				$html .= '</fieldset>';
 
 				echo $html;
+
+				/*$html = '<fieldset class="multicheck_fields ' . esc_attr( $sortable_class ) . '">';
+				foreach ( $args['options'] as $key => $label ) {
+
+					//$checked = isset($value[$key]) ? $value[$key] : '0';
+					$checked      = in_array( $key, $value ) ? ' checked="checked" ' : '';
+					$active_class = in_array( $key, $value ) ? 'active' : '';
+
+
+					$html_id = "{$args['section']}_{$args['id']}_{$key}";
+					$html_id = $this->clean_label_for($html_id);
+
+					//$html .= sprintf( '<p class="multicheck_field"><label for="wpuf-%1$s[%2$s][%3$s]">', $args['section'], $args['id'], $key );
+					$html .= sprintf( '<p class="multicheck_field"><label for="wpuf-%1$s">',$html_id );
+					$html .= sprintf( '<input type="hidden" name="%1$s[%2$s][]" value="" />', $args['section'], $args['id'] );
+
+
+					$html .= '<span class="checkbox-toggle-btn ' . esc_attr( $active_class ) . '">';
+					//$html .= sprintf( '<input type="checkbox" class="checkbox" id="wpuf-%1$s_%2$s_%3$s" name="%1$s[%2$s][%3$s]" value="%3$s" %4$s />', $args['section'], $args['id'], $key, $checked );
+					$html .= sprintf( '<input type="checkbox" class="checkbox" id="wpuf-%5$s" name="%1$s[%2$s][%3$s]" value="%3$s" %4$s />', $args['section'], $args['id'], $key, $checked, $html_id );
+					$html .= '<i class="checkbox-round-btn"></i></span>';
+
+					$html .= sprintf( '<i class="checkbox-round-btn-text">%1$s</i></label></p>', $label );
+				}
+				$html .= $this->get_field_description( $args );
+				$html .= '</fieldset>';
+
+				echo $html;*/
 			}
 
 
@@ -373,14 +459,21 @@
 			 *
 			 * @param array $args settings field args
 			 */
-			function callback_radio( $args ) {
+			function callback_radio( $args, $value = null ) {
 
-				$value = $this->get_option( $args['id'], $args['section'], $args['default'] );
+				if ( $value === null ) {
+					$value = $this->get_option( $args['id'], $args['section'], $args['default'] );
+				}
 
 				$html = '<fieldset class="radio_fields">';
 				foreach ( $args['options'] as $key => $label ) {
-					$html .= sprintf( '<label for="wpuf-%1$s[%2$s][%3$s]">', $args['section'], $args['id'], $key );
-					$html .= sprintf( '<input type="radio" class="radio" id="wpuf-%1$s[%2$s][%3$s]" name="%1$s[%2$s]" value="%3$s" %4$s />', $args['section'], $args['id'], $key, checked( $value, $key, false ) );
+
+					$html_id = "{$args['section']}_{$args['id']}_{$key}";
+					$html_id = $this->clean_label_for($html_id);
+
+					//$html .= sprintf( '<label for="wpuf-%1$s[%2$s][%3$s]">', $args['section'], $args['id'], $key );
+					$html .= sprintf( '<label for="wpuf-%1$s">', $html_id );
+					$html .= sprintf( '<input type="radio" class="radio" id="wpuf-%5$s" name="%1$s[%2$s]" value="%3$s" %4$s />', $args['section'], $args['id'], $key, checked( $value, $key, false ), $html_id );
 					$html .= sprintf( '%1$s</label>', $label );
 				}
 				$html .= $this->get_field_description( $args );
@@ -394,12 +487,18 @@
 			 *
 			 * @param array $args settings field args
 			 */
-			function callback_select( $args ) {
+			function callback_select( $args, $value = null ) {
 
-				$value = esc_attr( $this->get_option( $args['id'], $args['section'], $args['default'] ) );
-				$size  = isset( $args['size'] ) && ! is_null( $args['size'] ) ? $args['size'] : 'regular selecttwo-select';
+				if ( $value === null ) {
+					$value = esc_attr( $this->get_option( $args['id'], $args['section'], $args['default'] ) );
+				}
+				$size = isset( $args['size'] ) && ! is_null( $args['size'] ) ? $args['size'] : 'regular selecttwo-select';
 
-				$html = sprintf( '<select class="%1$s" name="%2$s[%3$s]" id="%2$s[%3$s]">', $size, $args['section'], $args['id'] );
+				$html_id = "{$args['section']}_{$args['id']}";
+				$html_id = $this->clean_label_for($html_id);
+
+				//$html = sprintf( '<select class="%1$s" name="%2$s[%3$s]" id="%2$s_%3$s">', $size, $args['section'], $args['id'] );
+				$html = sprintf( '<select class="%1$s" name="%2$s[%3$s]" id="%4$s">', $size, $args['section'], $args['id'], $html_id );
 				foreach ( $args['options'] as $key => $label ) {
 					$html .= sprintf( '<option value="%s"%s>%s</option>', $key, selected( $value, $key, false ), $label );
 				}
@@ -410,16 +509,17 @@
 			}
 
 
-
 			/**
 			 * Displays a multi-selectbox for a settings field
 			 *
 			 * @param array $args settings field args
 			 */
-			function callback_multiselect( $args ) {
+			function callback_multiselect( $args, $value = null ) {
 
 
-				$value = $this->get_option( $args['id'], $args['section'], $args['default'] );
+				if ( $value === null ) {
+					$value = $this->get_option( $args['id'], $args['section'], $args['default'] );
+				}
 
 				if ( ! is_array( $value ) ) {
 					$value = array();
@@ -431,8 +531,12 @@
 					$args['placeholder'] = esc_html__( 'Please Select', 'cbxwpemaillogger' );
 				}
 
+				$html_id = "{$args['section']}_{$args['id']}";
+				$html_id = $this->clean_label_for($html_id);
+
 				$html = sprintf( '<input type="hidden" name="%1$s[%2$s][]" value="" />', $args['section'], $args['id'] );
-				$html .= sprintf( '<select multiple class="%1$s" name="%2$s[%3$s][]" id="%2$s[%3$s]" style="min-width: 150px !important;"  placeholder="%4$s" data-placeholder="%4$s">', $size, $args['section'], $args['id'], $args['placeholder'] );
+				//$html .= sprintf( '<select multiple class="%1$s" name="%2$s[%3$s][]" id="%2$s_%3$s" style="min-width: 150px !important;"  placeholder="%4$s" data-placeholder="%4$s">', $size, $args['section'], $args['id'], $args['placeholder'] );
+				$html .= sprintf( '<select multiple class="%1$s" name="%2$s[%3$s][]" id="%5$s" style="min-width: 150px !important;"  placeholder="%4$s" data-placeholder="%4$s">', $size, $args['section'], $args['id'], $args['placeholder'], $html_id );
 
 
 				if ( isset( $args['optgroup'] ) && $args['optgroup'] ) {
@@ -474,12 +578,17 @@
 			 *
 			 * @param array $args settings field args
 			 */
-			function callback_textarea( $args ) {
+			function callback_textarea( $args, $value = null ) {
 
-				$value = esc_textarea( $this->get_option( $args['id'], $args['section'], $args['default'] ) );
-				$size  = isset( $args['size'] ) && ! is_null( $args['size'] ) ? $args['size'] : 'regular';
+				if ( $value === null ) {
+					$value = esc_textarea( $this->get_option( $args['id'], $args['section'], $args['default'] ) );
+				}
+				$size = isset( $args['size'] ) && ! is_null( $args['size'] ) ? $args['size'] : 'regular';
 
-				$html = sprintf( '<textarea rows="5" cols="55" class="%1$s-text" id="%2$s[%3$s]" name="%2$s[%3$s]">%4$s</textarea>', $size, $args['section'], $args['id'], $value );
+				$html_id = "{$args['section']}_{$args['id']}";
+				$html_id = $this->clean_label_for($html_id);
+
+				$html = sprintf( '<textarea rows="5" cols="55" class="%1$s-text" id="%5$s" name="%2$s[%3$s]">%4$s</textarea>', $size, $args['section'], $args['id'], $value, $html_id );
 				$html .= $this->get_field_description( $args );
 
 				echo $html;
@@ -492,7 +601,7 @@
 			 *
 			 * @return string
 			 */
-			function callback_html( $args ) {
+			function callback_html( $args, $value = null ) {
 				echo $this->get_field_description( $args );
 			}
 
@@ -501,12 +610,17 @@
 			 *
 			 * @param array $args settings field args
 			 */
-			function callback_wysiwyg( $args ) {
+			function callback_wysiwyg( $args, $value = null ) {
 
-				$value = $this->get_option( $args['id'], $args['section'], $args['default'] );
-				$size  = isset( $args['size'] ) && ! is_null( $args['size'] ) ? $args['size'] : '500px';
+				if ( $value === null ) {
+					$value = $this->get_option( $args['id'], $args['section'], $args['default'] );
+				}
+				$size = isset( $args['size'] ) && ! is_null( $args['size'] ) ? $args['size'] : '500px';
 
 				echo '<div style="max-width: ' . $size . ';">';
+
+				$html_id = "{$args['section']}_{$args['id']}";
+				$html_id = $this->clean_label_for($html_id);
 
 				$editor_settings = array(
 					'teeny'         => true,
@@ -517,7 +631,8 @@
 					$editor_settings = array_merge( $editor_settings, $args['options'] );
 				}
 
-				wp_editor( $value, $args['section'] . '-' . $args['id'], $editor_settings );
+				//wp_editor( $value, $args['section'] . '-' . $args['id'], $editor_settings );
+				wp_editor( $value, $html_id, $editor_settings );
 
 				echo '</div>';
 
@@ -529,16 +644,24 @@
 			 *
 			 * @param array $args settings field args
 			 */
-			function callback_file( $args ) {
+			function callback_file( $args, $value = null ) {
 
-				$value = esc_attr( $this->get_option( $args['id'], $args['section'], $args['default'] ) );
+				if ( $value === null ) {
+					$value = esc_attr( $this->get_option( $args['id'], $args['section'], $args['default'] ) );
+				}
+
 				$size  = isset( $args['size'] ) && ! is_null( $args['size'] ) ? $args['size'] : 'regular';
-				$id    = $args['section'] . '[' . $args['id'] . ']';
+
+				//$id    = $args['section'] . '[' . $args['id'] . ']';
+
+				$html_id = "{$args['section']}_{$args['id']}";
+				$html_id = $this->clean_label_for($html_id);
+
 				$label = isset( $args['options']['button_label'] ) ?
 					$args['options']['button_label'] :
 					esc_html__( 'Choose File', 'cbxwpemaillogger' );
 
-				$html = sprintf( '<input type="text" class="%1$s-text wpsa-url" id="%2$s[%3$s]" name="%2$s[%3$s]" value="%4$s"/>', $size, $args['section'], $args['id'], $value );
+				$html = sprintf( '<input type="text" class="%1$s-text wpsa-url" id="%5$s" name="%2$s[%3$s]" value="%4$s"/>', $size, $args['section'], $args['id'], $value, $html_id );
 				$html .= '<input type="button" class="button wpsa-browse" value="' . $label . '" />';
 				$html .= $this->get_field_description( $args );
 
@@ -551,12 +674,130 @@
 			 *
 			 * @param array $args settings field args
 			 */
-			function callback_color( $args ) {
+			function callback_color( $args, $value = null ) {
 
-				$value = esc_attr( $this->get_option( $args['id'], $args['section'], $args['default'] ) );
-				$size  = isset( $args['size'] ) && ! is_null( $args['size'] ) ? $args['size'] : 'regular';
+				if ( $value === null ) {
+					$value = esc_attr( $this->get_option( $args['id'], $args['section'], $args['default'] ) );
+				}
 
-				$html = sprintf( '<input type="text" class="%1$s-text wp-color-picker-field" id="%2$s[%3$s]" name="%2$s[%3$s]" value="%4$s" data-default-color="%5$s" />', $size, $args['section'], $args['id'], $value, $args['default'] );
+				$size = isset( $args['size'] ) && ! is_null( $args['size'] ) ? $args['size'] : 'regular';
+
+				$html_id = "{$args['section']}_{$args['id']}";
+				$html_id = $this->clean_label_for($html_id);
+
+				$html = sprintf( '<input type="text" class="%1$s-text wp-color-picker-field" id="%6$s" name="%2$s[%3$s]" value="%4$s" data-default-color="%5$s" />', $size, $args['section'], $args['id'], $value, $args['default'], $html_id );
+				$html .= $this->get_field_description( $args );
+
+				echo $html;
+			}
+
+			/**
+			 * Host servers type field
+			 *
+			 * @param $args
+			 */
+			function callback_repeat( $args ) {
+				$default = $args['default'];
+				$fields  = isset( $args['fields'] ) ? $args['fields'] : array();
+				$value   = $this->get_option( $args['id'], $args['section'], $args['default'] );
+
+				if ( ! is_array( $value ) ) {
+					$value = array();
+				}
+
+
+				$html = '';
+				if ( is_array( $fields ) & sizeof( $fields ) > 0 ) {
+
+					$index = 0;
+
+					$html .= '<div class="form-table-fields-parent">';
+
+					foreach ( $value as $val ) {
+
+
+						if ( ! is_array( $val ) ) {
+							$val = array();
+						}
+
+						$html .= '<div class="form-table-fields-parent-item">';
+						$html .= '<h5>'.$args['name'].' #'.($index+1).' <span class="form-table-fields-parent-item-icon form-table-fields-parent-item-control"></span><span class="form-table-fields-parent-item-icon form-table-fields-parent-item-sort"></span></h5>';
+						$html .= '<div class="form-table-fields-parent-item-wrap">';
+
+                            $html .= '<table class="form-table-fields-items">';
+                            foreach ( $fields as $field ) {
+
+
+
+
+                                $args_t = $args;
+                                unset( $args_t['fields'] );
+
+                                $args_t['section']           = isset( $args['section'] ) ? $args['section'] . '[' . $args['id'] . '][' . $index . ']' : '';
+                                $args_t['desc']              = isset( $field['desc'] ) ? $field['desc'] : '';
+                                $args_t['name']              = isset( $field['name'] ) ? $field['name'] : '';
+                                $args_t['label']              = isset( $field['label'] ) ? $field['label'] : '';
+                                $args_t['class']             = isset( $field['class'] ) ? $field['class'] : $args_t['name'];
+                                $args_t['id']                = $args_t['name'];
+                                $args_t['size']              = isset( $field['size'] ) ? $field['size'] : null;
+                                $args_t['min']               = isset( $field['min'] ) ? $field['min'] : '';
+                                $args_t['max']               = isset( $field['max'] ) ? $field['max'] : '';
+                                $args_t['step']              = isset( $field['step'] ) ? $field['step'] : '';
+                                $args_t['options']           = isset( $field['options'] ) ? $field['options'] : '';
+                                $args_t['default']           = isset( $field['default'] ) ? $field['default'] : '';
+                                $args_t['sanitize_callback'] = isset( $field['sanitize_callback'] ) ? $field['sanitize_callback'] : '';
+                                $args_t['placeholder']       = isset( $field['placeholder'] ) ? $field['placeholder'] : '';
+                                $args_t['type']              = isset( $field['type'] ) ? $field['type'] : 'text';
+                                $args_t['optgroup']          = isset( $field['optgroup'] ) ? intval( $field['optgroup'] ) : 0;
+                                $args_t['sortable']          = isset( $field['sortable'] ) ? intval( $field['sortable'] ) : 0;
+                                $callback                    = isset( $field['callback'] ) ? $field['callback'] : array( $this, 'callback_' . $args_t['type'] );
+
+
+                                $val_t = isset( $val[ $field['name'] ] ) ? $val[ $field['name'] ] : ( is_array( $args_t['default'] ) ? array() : '' );
+
+	                            $html .= '<tr class="form-table-fields-item"><td>';
+	                            $html_id = "{$args_t['section']}_{$args_t['id']}";
+	                            $html_id = $this->clean_label_for($html_id);
+	                            $html .= sprintf( '<label class="main-label" for="%1$s">%2$s</label>', $html_id, $args_t['label'] );
+	                            $html .= '</td></tr>';
+
+	                            $html .= '<tr class="form-table-fields-item"><td>';
+                                ob_start();
+                                call_user_func( $callback, $args_t, $val_t );
+                                $html .= ob_get_contents();
+                                ob_end_clean();
+	                            $html .= '</td></tr>';
+                            }
+                            $html .= '</table>';
+						$html .= '</div>';
+						$html .= '</div>';
+						$index ++;
+					}
+
+					$html .= '</div>';
+
+				}
+				$html .= $this->get_field_description( $args );
+
+				echo $html;
+			}
+
+			/**
+			 * Displays a text field for a settings field
+			 *
+			 * @param array $args settings field args
+			 */
+			function callback_text( $args, $value = null ) {
+				if ( $value === null ) {
+					$value = esc_attr( $this->get_option( $args['id'], $args['section'], $args['default'] ) );
+				}
+				$size = isset( $args['size'] ) && ! is_null( $args['size'] ) ? $args['size'] : 'regular';
+				$type = isset( $args['type'] ) ? $args['type'] : 'text';
+
+				$html_id = "{$args['section']}_{$args['id']}";
+				$html_id = $this->clean_label_for($html_id);
+
+				$html = sprintf( '<input autocomplete="none" onfocus="this.removeAttribute(\'readonly\');" readonly type="%1$s" class="%2$s-text" id="%6$s" name="%3$s[%4$s]" value="%5$s"/>', $type, $size, $args['section'], $args['id'], $value, $html_id );
 				$html .= $this->get_field_description( $args );
 
 				echo $html;

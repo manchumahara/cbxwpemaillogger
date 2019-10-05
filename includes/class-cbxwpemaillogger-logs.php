@@ -311,7 +311,7 @@
 
 			$status = isset( $item['status'] ) ? intval( $item['status'] ) : 0;
 
-			return ( $status ) ? esc_html__( 'Sent', 'cbxwpemaillogger' ) : esc_html__( 'Failed', 'cbxwpemaillogger' );
+			return ( $status ) ? esc_html__( 'Sent', 'cbxwpemaillogger' ) : '<a title="'.esc_html__( 'See error message in details mode', 'cbxwpemaillogger' ).'" href="'.admin_url('admin.php?page=cbxwpemaillogger&view=email&log_id=').intval( $item['id'] ).'">'.esc_html__( 'Failed', 'cbxwpemaillogger' ).'</a>';
 		}//end method column_subject
 
 		/**

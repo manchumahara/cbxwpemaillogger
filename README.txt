@@ -3,7 +3,7 @@ Contributors: codeboxr, manchumahara
 Tags: wordpress smtp, wordpress email log, smtp
 Requires at least: 3.9
 Tested up to: 5.2.3
-Stable tag: 1.0.2
+Stable tag: 1.0.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -67,6 +67,11 @@ e.g.
 7. Setting - SMTP configuration
 
 == Changelog ==
+= 1.0.4 =
+
+* [New] Plugin started as logger but now it also helps to send email using smtp
+* [New] Custom multiple SMTP server config
+* [New] Track email send failure, logs error message
 
 = 1.0.3 =
 

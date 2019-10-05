@@ -106,6 +106,26 @@
             placeholder      : '<p class="multicheck_field_placeholder"/>',
         });*/
 
+        //sort photos
+        //var adjustment_photo;
+        $(".multicheck_fields_sortable").sortable({
+            vertical         : true,
+            handle           : '.multicheck_field_handle',
+            //containerSelector: '.multicheck_fields',
+            itemSelector     : '.multicheck_field',
+            //placeholder      : '<p class="multicheck_field_placeholder"/>',
+            placeholder      : 'multicheck_field_placeholder',
+        });
+
+        $(".form-table-fields-parent").sortable({
+            vertical         : true,
+            handle           : '.form-table-fields-parent-item-sort',
+            //containerSelector: '.form-table-fields-parent',
+            itemSelector     : '.form-table-fields-parent-item',
+            //placeholder      : '<p class="multicheck_field_placeholder"/>',
+            placeholder      : 'form-table-fields-parent-item-placeholder',
+        });
+
 		//make the subheading single row
 		$('.setting_subheading').each(function (index, element) {
 			var $element = $(element);
@@ -129,7 +149,7 @@
 		});
 
 
-        $('.cbxwpemaillogger_group').on('click', '.checkbox', function() {
+        $('.cbxwpemaillogger_group').on('click', '.checkbox', function(event) {
             var mainParent = $(this).closest('.checkbox-toggle-btn');
             if($(mainParent).find('input.checkbox').is(':checked')) {
                 $(mainParent).addClass('active');
@@ -137,6 +157,12 @@
                 $(mainParent).removeClass('active');
             }
 
+        });
+
+		$('.form-table-fields-parent').on('click', '.form-table-fields-parent-item-control',function (event) {
+			var $this = $(this);
+			var $parent = $this.closest('.form-table-fields-parent-item');
+			$parent.find('.form-table-fields-parent-item-wrap').toggle();
         });
 
         //apply show/hide password feature to smtp password field

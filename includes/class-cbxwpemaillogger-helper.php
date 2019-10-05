@@ -67,6 +67,71 @@
 		}//end method getAllOptionNames
 
 		/**
+		 * Returns list of custom mailers
+		 *
+		 * @return mixed|void
+		 */
+		public static function getCustomMailer(){
+			$custom_mailer = array();
+
+			$custom_mailer['custom_smtp'] = esc_html__('Custom SMTP Host Server', 'cbxwpemaillogger');
+
+			return apply_filters('cbxwpemaillogger_custom_mailer', $custom_mailer);
+		}//end method getCustomMailer
+
+		/**
+		 * Returns list of custom smtp host servers
+		 *
+		 * @param bool $enabled_only
+		 *
+		 * @return array
+		 */
+		public static function getSMTPHostServers($enabled_only = false){
+			$settings = new CBXWPEmailLoggerSettings();
+			$smtp_email_servers = $settings->get_option('smtp_email_servers', 'cbxwpemaillogger_smtps', array() );
+			if(!is_array($smtp_email_servers)) $smtp_email_servers = array();
+
+			$smtp_email_servers_list = array();
+
+			if(is_array($smtp_email_servers) && sizeof($smtp_email_servers) > 0){
+				$index = 0;
+				foreach ($smtp_email_servers as $smtp_email_server){
+
+					$smtp_email_enable = isset($smtp_email_server['smtp_email_enable'])? intval($smtp_email_server['smtp_email_enable']) : 0;
+					$smtp_email_host = isset($smtp_email_server['smtp_email_host'])? esc_attr($smtp_email_server['smtp_email_host']) : '';
+					$smtp_email_port = isset($smtp_email_server['smtp_email_port'])? intval($smtp_email_server['smtp_email_port']) : 0;
+
+					if($enabled_only && $smtp_email_enable){
+						$smtp_email_servers_list[$index] = sprintf(esc_html__('SMTP Host Servers #%d(%s, %s)', 'cbxwpemaillogger'), ($index+1), $smtp_email_host, $smtp_email_port);
+					}
+
+
+					$index ++;
+				}
+			}
+
+			return $smtp_email_servers_list;
+		}//end method getSMTPHostServers
+
+
+		/**
+		 * Returns smtp server config
+		 *
+		 *
+		 *
+		 * @return array
+		 */
+		public static function getSMTPHostServer($index){
+			$settings = new CBXWPEmailLoggerSettings();
+			$smtp_email_servers = $settings->get_option('smtp_email_servers', 'cbxwpemaillogger_smtps', array() );
+			if(!is_array($smtp_email_servers)) $smtp_email_servers = array();
+
+			$smtp_config = isset($smtp_email_servers[$index])? $smtp_email_servers[$index]: array();
+			return $smtp_config;
+
+		}//end method getSMTPHostServer
+
+		/**
 		 * Get IP address
 		 *
 		 * @return string|void
@@ -108,7 +173,7 @@
 		 *
 		 * @param $timestamp
 		 *
-		 * @return false|string
+		 * @return false|string;
 		 */
 		public static function DateReadableFormat( $timestamp, $format = 'M j, Y' ) {
 			$format = ( $format == '' ) ? 'M j, Y' : $format;
@@ -369,6 +434,7 @@
                           email_data longtext NOT NULL DEFAULT '' COMMENT 'email body and header',
                           ip_address varchar(45) NOT NULL,                                                       
                           status tinyint(3) NOT NULL DEFAULT 1 COMMENT '1 means sent, 0 means failed',
+                          error_message text NOT NULL DEFAULT '' COMMENT 'email sending error message',
                           src_tracked varchar(255) NOT NULL DEFAULT '' COMMENT 'track plugin',
                           PRIMARY KEY (id)
                         ) $charset_collate; ";

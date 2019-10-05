@@ -36,8 +36,8 @@
 			}
 
 
-			$plugin = isset( $_REQUEST['plugin'] ) ? sanitize_text_field($_REQUEST['plugin']) : '';
-			check_admin_referer( "activate-plugin_{$plugin}" );
+			//$plugin = isset( $_REQUEST['plugin'] ) ? sanitize_text_field($_REQUEST['plugin']) : '';
+			//check_admin_referer( "activate-plugin_{$plugin}" );
 
 			//create tables
 			CBXWPEmailLogger_Activator::createTables();

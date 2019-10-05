@@ -239,6 +239,19 @@
 										?>
 									</td>
 								</tr>
+								<?php if($status == 0):	?>
+									<tr class="" >
+										<td class="row-title" style="color: red;"><?php esc_attr_e( 'Error Message', 'cbxwpemaillogger' ); ?></td>
+										<td style="color: red;">
+											<?php
+												$error_message = isset( $item['error_message'] ) ? sanitize_text_field( wp_unslash($item['error_message']) ) : esc_html__('Error not traced', 'cbxwpemaillogger');
+
+												echo $error_message;
+											?>
+										</td>
+									</tr>
+								<?php endif; ?>
+
 								<?php do_action( 'cbxwpemaillogger_single_log_display_end', $item ); ?>
 								</tbody>
 							</table>
